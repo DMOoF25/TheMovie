@@ -1,24 +1,36 @@
 ﻿sequenceDiagram
     actor JensPeter as "Jens Peter"
-    participant UI as "AddMovieView (UI)"
+    participant UI as "MainView (UI)"
+    participant Form as "AddMovieForm (UI)"
     participant VM as "AddMovieViewModel"
     participant Service as "MovieService"
     participant Repo as "MovieRepository"
     participant DB as "Database"
 
-    JensPeter->>UI: Clicks "Save"
-    UI->>VM: Executes SaveCommand
+    JensPeter->>UI: Clicks "Add New Movie"
+    UI->>+Form: Opens AddMovieForm
+    Form-->>-UI: Displays form fields
 
-    VM->>Service: AddMovie(title, duration, genre)
-    Service->>Service: Validate input
-    alt Input is valid
-        Service->>Repo: Save(new Movie)
-        Repo->>DB: Insert Movie record
-        DB-->>Repo: Success
-        Repo-->>Service: Movie saved
-        Service-->>VM: Return success
-        VM-->>UI: Show confirmation and update list
-    else Input is invalid
-        Service-->>VM: Return validation errors
-        VM-->>UI: Show error messages
+    JensPeter->>Form: Fills in title, duration, genre
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate input
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: AddMovie(title, duration, genre)
+    Service->>+Repo: Save(new Movie)
+    Repo->>+DB: Insert Movie record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Movie saved
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Movie not saved
+    Service-->>VM: Return eror
     end
+    VM-->>-UI: Show confirmation
