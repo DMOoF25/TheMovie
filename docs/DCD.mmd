@@ -1,0 +1,46 @@
+classDiagram
+    %% Core Entity
+    class Movie {
+        +Guid Id
+        +string Title
+        +int Duration
+        +Genre Genre
+    }
+
+    %% Value Object
+    class Genre {
+        <<enumeration>>
+        Action
+        Adventure
+        Biography
+        Comedy
+        Crime
+        Drama
+        History
+        Horror
+        Music
+        Mystery
+        Romance
+        Thriller
+        War
+    }
+
+    class MovieRepository {
+    }    
+
+    class Repository~T~ {
+        +-List~T~ Items
+        +Add(T) :void
+        +GetAll() :List
+        +Get(string) :T
+        +Get(Guid) :T
+        +Update(T) :void
+        +Remove(T) :void
+    }
+
+    <<Abstract>> Repository
+
+    %% Relationships
+    Movie --> Genre : uses
+    MovieRepository ..|> Repository : "implement"
+    Movie "0..*" --* "0..1" MovieRepository  : "have"
