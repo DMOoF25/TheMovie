@@ -1,46 +1,72 @@
-classDiagram
-    %% Core Entity
-    class Movie {
-        +Guid Id
-        +string Title
-        +int Duration
-        +Genre Genre
+﻿classDiagram
+    direction TB
+    namespace TheMovie.Domain.Entities {
+        class Movie {
+            +Guid Id
+            +string Title
+            +int Duration
+            +Genre Genre
+            +Movie(string title, int duration)
+            +HasGenre(Genre genre) :bool
+            +AddGenre(Genre genre) :void
+            +RemoveGenre(Genre genre) :void
+        }
     }
 
-    %% Value Object
-    class Genre {
-        <<enumeration>>
-        Action
-        Adventure
-        Biography
-        Comedy
-        Crime
-        Drama
-        History
-        Horror
-        Music
-        Mystery
-        Romance
-        Thriller
-        War
+    namespace TheMovie.Domain.ValueObjects {
+        class Genre {
+            Action
+            Adventure
+            Biography
+            Comedy
+            Crime
+            Drama
+            History
+            Horror
+            Music
+            Mystery
+            Romance
+            Thriller
+            War
+        }
     }
 
-    class MovieRepository {
-    }    
+    namespace TheMovie.Infrastructure.Data {
+        class MovieRepository {
+        }    
 
-    class Repository~T~ {
-        +-List~T~ Items
-        +Add(T) :void
-        +GetAll() :List
-        +Get(string) :T
-        +Get(Guid) :T
-        +Update(T) :void
-        +Remove(T) :void
+        class RepositoryBase~TEntity~ {
+            -ConcurrentDictionary~Guid, TEntity~ _store
+            -Func~TEntity, Guid~ _getId
+            -Action~TEntity, Guid~ _setId
+            RepositoryBase(Func~TEntity, Guid~? idSelector = null, Action~TEntity, Guid~? idSetter = null)
+        }
     }
 
-    <<Abstract>> Repository
+    namespace TheMovie.Application.Abstractions {
+        class IRepository {
+            +AddAsync(TEntity entity, CancellationToken cancellationToken = default) : Task
+            +AddRangeAsync(IEnumerable~TEntity~ entities, CancellationToken cancellationToken = default) : Task
+            +GetByIdAsync(Guid id, CancellationToken cancellationToken = default) : Task~TEntity~~
+            +GetAllAsync(CancellationToken cancellationToken = default) : Task~IEnumerable~TEntity~
+            +UpdateAsync(TEntity entity, CancellationToken cancellationToken = default) : Task
+            +DeleteAsync(TEntity entity, CancellationToken cancellationToken = default) : Task
+        }
+
+        class IMovieRepository {
+
+        }
+    }
+
+    <<interface>> IRepository
+    <<interface>> IMovieRepository
+    <<abstract>> RepositoryBase
+    <<enumeration>> Genre
 
     %% Relationships
     Movie --> Genre : uses
-    MovieRepository ..|> Repository : "implement"
-    Movie "0..*" --* "0..1" MovieRepository  : "have"
+    MovieRepository ..|> RepositoryBase : "implements"
+    Movie --* MovieRepository  : "have"
+    MovieRepository ..|> IMovieRepository : "implements"
+    RepositoryBase ..|> IRepository : "implements"
+    IMovieRepository ..|> IRepository : "inherits"
