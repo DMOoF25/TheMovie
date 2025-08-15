@@ -26,6 +26,13 @@ public class Movie
     /// </summary>
     public Genre Genres { get; set; } = Genre.None;
 
+    public Movie(string title, int duration)
+    {
+        Id = Guid.NewGuid(); // Automatically assign a new unique identifier
+        Title = title;
+        Duration = duration;
+    }
+
     /// <summary>
     /// Checks if the movie has a specific genre.
     /// </summary>
