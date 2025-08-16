@@ -12,4 +12,10 @@
     <ProjectReference Include="..\TheMovie.Infrastructure\TheMovie.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\Common\" />
+    <Folder Include="Views\Components\" />
+    <Folder Include="Views\Themes\Styles\" />
+  </ItemGroup>
+
 </Project>

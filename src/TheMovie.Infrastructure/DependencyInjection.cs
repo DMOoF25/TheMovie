@@ -1,0 +1,14 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using TheMovie.Application.Abstractions;
+using TheMovie.Infrastructure.Data;
+
+namespace TheMovie.Infrastructure;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddMovieInfrastructure(this IServiceCollection services)
+    {
+        services.AddSingleton<IMovieRepository, MovieRepository>();
+        return services;
+    }
+}
