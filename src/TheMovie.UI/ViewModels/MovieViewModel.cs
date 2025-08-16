@@ -10,7 +10,7 @@ using TheMovie.UI.Commands;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class AddMovieViewModel : INotifyPropertyChanged
+public sealed class MovieViewModel : INotifyPropertyChanged
 {
     private readonly IMovieRepository _repository;
 
@@ -74,7 +74,7 @@ public sealed class AddMovieViewModel : INotifyPropertyChanged
 
 
 
-    public AddMovieViewModel(IMovieRepository repository)
+    public MovieViewModel(IMovieRepository repository)
     {
         _repository = repository;
 

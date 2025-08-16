@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TheMovie.Application;
+using TheMovie.Infrastructure;
 using TheMovie.UI.ViewModels;
 using TheMovie.UI.Views;
 
@@ -19,7 +21,7 @@ public partial class App : System.Windows.Application
                     .AddMovieApplication()
                     .AddMovieInfrastructure();
 
-                services.AddTransient<AddMovieViewModel>();
+                services.AddTransient<MovieViewModel>();
                 services.AddTransient<AddMovieView>();
                 services.AddSingleton<MainWindow>();
             })
