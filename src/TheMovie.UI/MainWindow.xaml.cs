@@ -24,7 +24,13 @@ public partial class MainWindow : Window
     }
     private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("The Movie App\nVersion 1.0\n© 2025 Team 4", "Om The Movie App", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show("The Movie App" +
+                        "\n\nA simple WPF application to manage movies." +
+                        "\n\nDeveloped by Team 4" +
+                        "\n\n",
+                        "Om The Movie App",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
     }
     #endregion
 }

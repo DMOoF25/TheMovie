@@ -13,9 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\Common\" />
     <Folder Include="Views\Components\" />
     <Folder Include="Views\Themes\Styles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
   </ItemGroup>
 
 </Project>
