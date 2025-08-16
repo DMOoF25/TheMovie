@@ -7,6 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <StackPanel>
+            <Menu Name="MainMenu">
+                <MenuItem Header="Fil">
+                    <MenuItem Header="Afslut" Click="MenuItemExit_Click">
+                        <MenuItem.ToolTip>
+                            Afslut programmet
+                        </MenuItem.ToolTip>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Film Db">
+                    <MenuItem Header="Tilføj Film" Click="MenuItemAddMovie_Click"/>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Margin="10"/>
+        </StackPanel>
     </Grid>
 </Window>
