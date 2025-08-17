@@ -15,7 +15,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     private readonly IMovieRepository _repository;
 
     private string _title = string.Empty;
-    private string _durationText = string.Empty; // keep raw input for validation display
+    private string _durationText = string.Empty;
     private bool _isSaving;
     private string? _error;
 
@@ -72,12 +72,12 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
-
+    // NEW: Event raised after a movie is successfully saved.
+    public event EventHandler<Movie>? MovieSaved;
 
     public MovieViewModel(IMovieRepository repository)
     {
         _repository = repository;
-
         LoadGenreOptions();
 
         SaveCommand = new RelayCommand(Save, CanSave);
@@ -87,7 +87,6 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private void LoadGenreOptions()
     {
-        // Exclude 0 (None)
         foreach (Genre g in Enum.GetValues(typeof(Genre)))
         {
             if (g == Genre.None) continue;
@@ -136,11 +135,12 @@ public sealed class MovieViewModel : INotifyPropertyChanged
                 Genres = selectedGenres
             };
 
-            // In-memory add
             _repository.AddAsync(movie).GetAwaiter().GetResult();
 
+            MovieSaved?.Invoke(this, movie); // Notify listeners
+
             MessageBox.Show("Movie saved.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset(); // Clear form for next entry
+            Reset();
         }
         catch (Exception ex)
         {
@@ -164,7 +164,6 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private void Cancel()
     {
-        // For now just clear; navigation/back handled by caller (MainWindow frame history).
         Reset();
         MessageBox.Show("Input cleared.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
     }

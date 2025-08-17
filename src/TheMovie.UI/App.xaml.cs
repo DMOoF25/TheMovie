@@ -1,8 +1,10 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TheMovie.Application;
 using TheMovie.Infrastructure;
+using TheMovie.UI.Converters;
 using TheMovie.UI.ViewModels;
 using TheMovie.UI.Views;
 
@@ -14,6 +16,13 @@ public partial class App : System.Windows.Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // Register global resources early (before any windows/pages are created)
+        if (Resources["NullToVisibilityConverter"] is null)
+            Resources["NullToVisibilityConverter"] = new NullToVisibilityConverter();
+
+        if (Resources["BoolToVis"] is null)
+            Resources["BoolToVis"] = new BooleanToVisibilityConverter();
+
         HostInstance = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
@@ -21,6 +30,7 @@ public partial class App : System.Windows.Application
                     .AddMovieApplication()
                     .AddMovieInfrastructure();
 
+                services.AddTransient<MoviesListViewModel>();
                 services.AddTransient<MovieViewModel>();
                 services.AddTransient<AddMovieView>();
                 services.AddSingleton<MainWindow>();
