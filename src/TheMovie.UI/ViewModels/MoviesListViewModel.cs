@@ -36,6 +36,7 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     public MoviesListViewModel(IMovieRepository repository)
     {
         _repository = repository;
+        _repository.InitializeAsync(); // Ensure to have loaded data in view
         MoviesView = CollectionViewSource.GetDefaultView(Movies);
         MoviesView.SortDescriptions.Add(new SortDescription(nameof(MovieRowViewModel.Title), ListSortDirection.Ascending));
 
