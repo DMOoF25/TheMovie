@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant UI as "MainView (UI)"
+    participant Form as "AddHallForm (UI)"
+    participant VM as "AddHallViewModel"
+    participant Service as "HallService"
+    participant Repo as "HallRepository"
+    participant DB as "Persistens"
+
+    JensPeter->>UI: Clicks "Add New Hall"
+    UI->>+Form: Opens AddHallForm
+    Form-->>-UI: Displays form fields
+
+    JensPeter->>Form: Fills in hallName, capacity, cinemaID
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate input
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: AddHall(cinemaID, hallName, capacity)
+    Service->>+Repo: Save(new Hall)
+    Repo->>+DB: Insert Hall record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Hall saved
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Hall not saved
+    Service-->>VM: Return error
+    end
+    VM-->>-UI: Show confirmation
