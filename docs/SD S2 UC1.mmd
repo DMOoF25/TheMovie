@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant UI as "MainView (UI)"
+    participant Form as "AddCinemaForm (UI)"
+    participant VM as "AddCinemaViewModel"
+    participant Service as "CinemaService"
+    participant Repo as "CinemaRepository"
+    participant DB as "Persistens"
+
+    JensPeter->>UI: Clicks "Add New Cinema"
+    UI->>+Form: Opens AddCinemaForm
+    Form-->>-UI: Displays form fields
+
+    JensPeter->>Form: Fills in name, address
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate input
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: AddCinema(name, address)
+    Service->>+Repo: Save(new Cinema)
+    Repo->>+DB: Insert Cinema record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Cinema saved
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Cinema not saved
+    Service-->>VM: Return error
+    end
+    VM-->>-UI: Show confirmation
