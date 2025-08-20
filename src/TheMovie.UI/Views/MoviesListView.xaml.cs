@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using TheMovie.Infrastructure.Data;
+using TheMovie.Infrastructure.Persistents;
 using TheMovie.UI.ViewModels;
 
 namespace TheMovie.UI.Views;

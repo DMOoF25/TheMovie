@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
-using TheMovie.Infrastructure.Data;
+using TheMovie.Infrastructure.Persistents;
 
 namespace TheMovie.Infrastructure;
 
