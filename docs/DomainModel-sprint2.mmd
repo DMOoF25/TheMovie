@@ -1,0 +1,48 @@
+﻿classDiagram
+    class Film {
+        Titel
+        Varighed
+        Premieredato
+    }
+
+    class Instruktør {
+        Navn
+    }
+
+    class Biograf {
+        Navn
+        Adresse
+    }
+
+    class Sal {
+        Nummer
+        AntalPladser
+    }
+
+    class Visning {
+        Dato
+        Tidspunkt
+    }
+
+    class Genre {
+        <<enumeration>>
+        Action
+        Eventyr
+        Biografi
+        Komedie
+        Krimi
+        Drama
+        Historie
+        Gyser
+        Musik
+        Mysterie
+        Romantik
+        Thriller
+        Krig
+    }
+
+    Film "1..*" -- "1..*" Genre
+    Film "1..*" -- "1..*" Instruktør
+    Visning "1..*" -- "1..*" Film
+    Visning "1..*" -- "1..*" Sal
+    Sal "1..*" -- "1..*" Biograf
