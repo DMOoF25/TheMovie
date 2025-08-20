@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant UI as "MainView (UI)"
+    participant Form as "EditMovieForm (UI)"
+    participant VM as "EditMovieViewModel"
+    participant Service as "MovieService"
+    participant Repo as "MovieRepository"
+    participant DB as "Persistens"
+
+    JensPeter->>UI: Clicks "Edit Movie"
+    UI->>+Form: Opens EditMovieForm with current movie data
+    Form-->>-UI: Displays editable fields
+
+    JensPeter->>Form: Updates title, genre, duration, etc.
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate new input
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: EditMovie(movieID, updatedData)
+    Service->>+Repo: Update(Movie)
+    Repo->>+DB: Update Movie record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Movie updated
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Update failed
+    Service-->>VM: Return error
+    end
+    VM-->>-UI: Show confirmation
