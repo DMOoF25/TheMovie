@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant UI as "MainView (UI)"
+    participant Form as "AddShowtimeForm (UI)"
+    participant VM as "AddShowtimeViewModel"
+    participant Service as "ShowtimeService"
+    participant Repo as "ShowtimeRepository"
+    participant DB as "Persistens"
+
+    JensPeter->>UI: Clicks "Add New Showtime"
+    UI->>+Form: Opens AddShowtimeForm
+    Form-->>-UI: Displays form fields
+
+    JensPeter->>Form: Fills in filmID, cinemaHallID, dateTime
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate input and calculate totalDuration
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: AddShowtime(filmID, cinemaHallID, dateTime)
+    Service->>+Repo: Save(new Showtime)
+    Repo->>+DB: Insert Showtime record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Showtime saved
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Showtime not saved
+    Service-->>VM: Return error
+    end
+    VM-->>-UI: Show confirmation
