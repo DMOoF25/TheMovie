@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant UI as "MainView (UI)"
+    participant Form as "AddDirectorForm (UI)"
+    participant VM as "AddDirectorViewModel"
+    participant Service as "DirectorService"
+    participant Repo as "DirectorRepository"
+    participant DB as "Persistens"
+
+    JensPeter->>UI: Clicks "Add New Director"
+    UI->>+Form: Opens AddDirectorForm
+    Form-->>-UI: Displays form fields
+
+    JensPeter->>Form: Fills in name, birthYear, nationality
+    Form->>+VM: Updates bound properties
+
+    VM->>+Service: Validate input
+    Service-->>-VM: Validation result
+    VM-->>-Form: Enable Save button if valid
+
+    JensPeter->>Form: Clicks "Save"
+    Form->>+VM: Executes SaveCommand
+
+    VM->>+Service: AddDirector(name, birthYear, nationality)
+    Service->>+Repo: Save(new Director)
+    Repo->>+DB: Insert Director record
+    alt Can be saved
+    DB-->>-Repo: Success
+    Repo-->>-Service: Director saved
+    Service-->>-VM: Return success
+    else Can not be saved
+    DB-->>Repo: Error
+    Repo-->>Service: Director not saved
+    Service-->>VM: Return error
+    end
+    VM-->>-UI: Show confirmation
