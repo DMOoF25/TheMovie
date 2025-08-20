@@ -1,0 +1,144 @@
+﻿classDiagram
+    direction TB
+    namespace TheMovie.Domain.Entities {
+        class Movie {
+            +Guid Id
+            +string Title
+            +int Duration
+            +Genre Genre
+            +Movie(string title, int duration)
+            +HasGenre(Genre genre) bool
+            +AddGenre(Genre genre) void
+            +RemoveGenre(Genre genre) void
+        }
+
+        class Instructor {
+            +Guid Id
+            +string Name
+        }
+
+        class Cinema {
+            +Guid Id
+            +string Name
+            +string Address
+        }
+
+        class Room {
+            +Guid Id
+            +string Name
+            +int Capacity
+            +Room(string name, int capacity, Cinima cinima)
+        }
+
+        class Screening {
+            +Guid Id
+            +DateTime StartTime
+            +DateTime EndTime
+            +Movie Movie
+            +Screening(Movie movie, Cinima cinima, Instuctor instuctor, DateTime startTime, DateTime endTime)
+        }
+
+    }
+
+    namespace TheMovie.Domain.ValueObjects {
+        class Genre {
+            Action
+            Adventure
+            Biography
+            Comedy
+            Crime
+            Drama
+            History
+            Horror
+            Music
+            Mystery
+            Romance
+            Thriller
+            War
+        }
+    }
+
+    namespace TheMovie.Infrastructure.Persistens {
+        class MovieRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+        }
+
+        class InstructorRepository {
+        }
+
+        class CinemaRepository {
+        }
+
+        class RoomRepository {
+        }
+
+        class ScreeningRepository {
+        }
+
+        class RepositoryBase~TEntity~ {
+            -ConcurrentDictionary~Guid, TEntity~ _store
+            -Func~TEntity, Guid~ _getId
+            -Action~TEntity, Guid~ _setId
+            RepositoryBase(Func~TEntity, Guid~? idSelector = null, Action~TEntity, Guid~? idSetter = null)
+        }
+    }
+
+    namespace TheMovie.Application.Abstractions {
+        class IRepository {
+            +AddAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+            +AddRangeAsync(IEnumerable~TEntity~ entities, CancellationToken cancellationToken = default) Task
+            +GetByIdAsync(Guid id, CancellationToken cancellationToken = default) Task~TEntity~
+            +GetAllAsync(CancellationToken cancellationToken = default) Task~IEnumerable<TEntity>~
+            +UpdateAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+            +DeleteAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+        }
+
+        class IMovieRepository {
+        }
+        class IInstructorRepository {
+        }
+        class ICinemaRepository {
+        }
+        class IRoomRepository {
+        }
+        class IScreeningRepository {
+        }
+
+    }
+
+    <<interface>> IRepository
+    <<interface>> IMovieRepository
+    <<interface>> IInstructorRepository
+    <<interface>> ICinemaRepository
+    <<interface>> IRoomRepository
+    <<interface>> IScreeningRepository
+    <<abstract>> RepositoryBase
+    <<enumeration>> Genre
+
+    %% Relationships
+    Genre <-- Movie : uses
+    Movie --* MovieRepository : manages
+    Instructor --* InstructorRepository : manages
+    Cinema --* CinemaRepository : manages
+    Room --* RoomRepository : manages
+    Screening --* ScreeningRepository : manages
+
+    MovieRepository ..|> IMovieRepository : "implements"
+    InstructorRepository ..|> IInstructorRepository : "implements"
+    CinemaRepository ..|> ICinemaRepository : "implements"
+    RoomRepository ..|> IRoomRepository : "implements"
+    ScreeningRepository ..|> IScreeningRepository : "implements"
+    RepositoryBase ..|> IRepository : "implements"
+
+    MovieRepository ..|> RepositoryBase : "inherits"
+    InstructorRepository ..|> RepositoryBase : "inherits"
+    CinemaRepository ..|> RepositoryBase : "inherits"
+    RoomRepository ..|> RepositoryBase : "inherits"
+    ScreeningRepository ..|> RepositoryBase : "inherits"
+
+    IMovieRepository ..|> IRepository : "inherits"
+    IInstructorRepository ..|> IRepository : "inherits"
+    ICinemaRepository ..|> IRepository : "inherits"
+    IRoomRepository ..|> IRepository : "inherits"
+    IScreeningRepository ..|> IRepository : "inherits"
