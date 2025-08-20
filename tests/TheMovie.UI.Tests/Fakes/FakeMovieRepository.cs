@@ -35,4 +35,9 @@ internal sealed class FakeMovieRepository : IMovieRepository
         if (idx >= 0) _added.RemoveAt(idx);
         return Task.CompletedTask;
     }
+
+    public Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

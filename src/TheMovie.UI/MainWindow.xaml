@@ -22,7 +22,8 @@
             </Menu>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-            <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Margin="10"/>
+            <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Margin="10">
+            </Frame>
         </StackPanel>
     </Grid>
 </Window>
