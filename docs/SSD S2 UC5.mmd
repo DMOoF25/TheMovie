@@ -1,0 +1,15 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant System as "BiografSystem"
+
+    JensPeter->>System: Clicks "Edit Movie"
+    System-->>JensPeter: Displays current movie data
+
+    JensPeter->>System: Submits updated title, genre, duration, etc.
+    System-->>System: Validate input
+    alt Valid data
+        System-->>System: Update Movie object
+        System-->>JensPeter: Confirmation message
+    else Invalid data
+        System-->>JensPeter: Error message
+    end
