@@ -1,0 +1,16 @@
+﻿sequenceDiagram
+    actor JensPeter as "Jens Peter"
+    participant System as "BiografSystem"
+
+    JensPeter->>System: Clicks "Add New Showtime"
+    System-->>JensPeter: Displays showtime form
+
+    JensPeter->>System: Submits filmID, hallID, dateTime
+    System-->>System: Validate input
+    System-->>System: Calculate totalDuration (film + 15min ads + 15min cleaning)
+    alt Valid data & no overlap
+        System-->>System: Create Showtime object
+        System-->>JensPeter: Confirmation message
+    else Invalid data or overlap
+        System-->>JensPeter: Error message
+    end
