@@ -38,7 +38,9 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                     if (parts.Length < 4) continue;
                     if (!Guid.TryParse(parts[0], out var id)) continue;
                     if (!int.TryParse(parts[2], out var duration)) continue;
-                    if (!Enum.TryParse<Genre>(parts[3], true, out var genres)) continue;
+
+                    if (!TryParseGenres(parts[3], out var genres)) continue;
+
 
                     var movie = new Movie { Id = id, Title = parts[1], Duration = duration, Genres = genres };
                     UpsertInMemory(movie);
@@ -70,7 +72,8 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                 {
                     foreach (var movie in Items)
                     {
-                        var line = $"{movie.Id},{Escape(movie.Title)},{movie.Duration},{movie.Genres}";
+                        var genresSerialized = SerializeGenres(movie.Genres); // now ';' separated
+                        var line = $"{movie.Id},{Escape(movie.Title)},{movie.Duration},{genresSerialized}";
                         await writer.WriteLineAsync(line).ConfigureAwait(false);
                     }
                 }
@@ -93,7 +96,39 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
         }
     }
 
+    // Serialize flags (skip None unless it is the only flag) using ';' separator.
+    private static string SerializeGenres(Genre genres)
+    {
+        if (genres == Genre.None) return nameof(Genre.None);
+        var singles = Enum.GetValues<Genre>()
+            .Where(g => g != Genre.None && genres.HasFlag(g));
+        return string.Join(';', singles);
+    }
 
+    // Accept both ';' (new) and ',' (legacy flags ToString) separators.
+    private static bool TryParseGenres(string raw, out Genre genres)
+    {
+        genres = Genre.None;
+        if (string.IsNullOrWhiteSpace(raw)) return true;
+
+        // Legacy enum flags ToString() produces "Action, Comedy"
+        var parts = raw.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var part in parts)
+        {
+            if (part.Equals(nameof(Genre.None), StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (Enum.TryParse<Genre>(part, true, out var g))
+            {
+                genres |= g;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /*
     // Movies that include (at least) the specified single genre flag.
