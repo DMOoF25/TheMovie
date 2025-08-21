@@ -125,6 +125,7 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
             {
                 return false;
             }
+
         }
         return true;
     }

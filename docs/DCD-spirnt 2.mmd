@@ -103,7 +103,7 @@
     }
 
     namespace TheMovie.Application.Abstractions {
-        class IRepository {
+        class IRepositoryBase {
             +AddAsync(TEntity entity, CancellationToken cancellationToken = default) Task
             +AddRangeAsync(IEnumerable~TEntity~ entities, CancellationToken cancellationToken = default) Task
             +GetByIdAsync(Guid id, CancellationToken cancellationToken = default) Task~TEntity~
@@ -125,7 +125,7 @@
 
     }
 
-    <<interface>> IRepository
+    <<interface>> IRepositoryBase
     <<interface>> IMovieRepository
     <<interface>> IInstructorRepository
     <<interface>> ICinemaRepository
@@ -147,7 +147,7 @@
     CinemaRepository ..|> ICinemaRepository : "implements"
     HallRepository ..|> IHallRepository : "implements"
     ScreeningRepository ..|> IScreeningRepository : "implements"
-    RepositoryBase ..|> IRepository : "implements"
+    RepositoryBase ..|> IRepositoryBase : "implements"
 
     MovieRepository ..|> RepositoryBase : "inherits"
     InstructorRepository ..|> RepositoryBase : "inherits"
@@ -155,8 +155,8 @@
     HallRepository ..|> RepositoryBase : "inherits"
     ScreeningRepository ..|> RepositoryBase : "inherits"
 
-    IMovieRepository ..|> IRepository : "inherits"
-    IInstructorRepository ..|> IRepository : "inherits"
-    ICinemaRepository ..|> IRepository : "inherits"
-    IHallRepository ..|> IRepository : "inherits"
-    IScreeningRepository ..|> IRepository : "inherits"
+    IMovieRepository ..|> IRepositoryBase : "inherits"
+    IInstructorRepository ..|> IRepositoryBase : "inherits"
+    ICinemaRepository ..|> IRepositoryBase : "inherits"
+    IHallRepository ..|> IRepositoryBase : "inherits"
+    IScreeningRepository ..|> IRepositoryBase : "inherits"
