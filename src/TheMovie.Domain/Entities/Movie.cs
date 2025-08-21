@@ -62,7 +62,7 @@ public class Movie
     /// Stored as a <see cref="DateOnly"/> to avoid time zone ambiguity.
     /// Defaults to the current local date at instantiation.
     /// </remarks>
-    public DateOnly Premiere { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public DateOnly PremiereDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     /// <summary>
     /// Initializes a new instance of <see cref="Movie"/>.
@@ -77,7 +77,7 @@ public class Movie
     /// </summary>
     /// <param name="title">Human-readable title.</param>
     /// <param name="duration">Runtime length in minutes.</param>
-    /// <param name="premiere">Premiere (release) date.</param>
+    /// <param name="premiere">PremiereDate (release) date.</param>
     /// <param name="instructorId">Optional instructor (director) identifier; defaults to empty.</param>
     /// <example>
     /// <code>
@@ -91,7 +91,7 @@ public class Movie
         Title = title;
         Duration = duration;
         InstructorId = instructorId;
-        Premiere = premiere;
+        PremiereDate = premiere;
     }
 
     /// <summary>

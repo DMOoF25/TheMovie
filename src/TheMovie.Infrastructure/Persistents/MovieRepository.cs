@@ -10,8 +10,6 @@ namespace TheMovie.Infrastructure.Persistents;
 /// </summary>
 public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 {
-    private readonly SemaphoreSlim _ioLock = new(1, 1);
-
     public MovieRepository() : base()
     {
     }
@@ -37,12 +35,13 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                     var parts = line.Split(',');
                     if (parts.Length < 4) continue;
                     if (!Guid.TryParse(parts[0], out var id)) continue;
+                    if (string.IsNullOrWhiteSpace(parts[1])) continue;
                     if (!int.TryParse(parts[2], out var duration)) continue;
+                    if (!DateOnly.TryParse(parts[3], out var premiereDate)) continue;
+                    if (!TryParseGenres(parts[4], out var genres)) continue;
 
-                    if (!TryParseGenres(parts[3], out var genres)) continue;
 
-
-                    var movie = new Movie { Id = id, Title = parts[1], Duration = duration, Genres = genres };
+                    var movie = new Movie { Id = id, Title = parts[1], Duration = duration, PremiereDate = premiereDate, Genres = genres };
                     UpsertInMemory(movie);
                     loaded++;
                 }
@@ -73,7 +72,7 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                     foreach (var movie in Items)
                     {
                         var genresSerialized = SerializeGenres(movie.Genres); // now ';' separated
-                        var line = $"{movie.Id},{Escape(movie.Title)},{movie.Duration},{genresSerialized}";
+                        var line = $"{movie.Id},{Escape(movie.Title)},{movie.Duration},{movie.PremiereDate},{genresSerialized}";
                         await writer.WriteLineAsync(line).ConfigureAwait(false);
                     }
                 }

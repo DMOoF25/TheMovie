@@ -5,7 +5,7 @@
 /// Implementations may be purely in-memory or provide persistence.
 /// </summary>
 /// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
-public interface IRepository<TEntity>
+public interface IRepositoryBase<TEntity>
     where TEntity : class
 {
     /// <summary>

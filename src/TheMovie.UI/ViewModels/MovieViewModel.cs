@@ -16,6 +16,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private string _title = string.Empty;
     private string _durationText = string.Empty;
+    private DateOnly _premiereDate = DateOnly.FromDateTime(DateTime.Now);
     private bool _isSaving;
     private string? _error;
 
@@ -38,6 +39,17 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         {
             if (_durationText == value) return;
             _durationText = value;
+            OnPropertyChanged();
+            RefreshCommandStates();
+        }
+    }
+
+    public DateOnly PremiereDate
+    {
+        get => _premiereDate;
+        set
+        {
+            _premiereDate = value;
             OnPropertyChanged();
             RefreshCommandStates();
         }
@@ -101,6 +113,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     {
         if (IsSaving) return false;
         if (string.IsNullOrWhiteSpace(Title)) return false;
+        if (PremiereDate < DateOnly.FromDateTime(DateTime.Now)) return false;
         if (!TryParseDuration(out _)) return false;
         if (GetSelectedGenres() == Genre.None) return false;
         return true;
@@ -109,6 +122,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     private bool CanReset()
         => !string.IsNullOrEmpty(Title) ||
            !string.IsNullOrEmpty(DurationText) ||
+           PremiereDate != DateOnly.FromDateTime(DateTime.Now) ||
            GenreOptions.Any(o => o.IsSelected);
 
     private void Save()
@@ -130,7 +144,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         IsSaving = true;
         try
         {
-            var movie = new Movie(Title.Trim(), duration)
+            var movie = new Movie(Title.Trim(), duration, PremiereDate)
             {
                 Genres = selectedGenres
             };
@@ -157,6 +171,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     {
         Title = string.Empty;
         DurationText = string.Empty;
+        PremiereDate = DateOnly.FromDateTime(DateTime.Now);
         foreach (var g in GenreOptions)
             g.IsSelected = false;
         Error = null;
