@@ -5,16 +5,16 @@ using TheMovie.Infrastructure.Persistents;
 namespace TheMovie.Persistents.Tests;
 
 [TestClass]
-public class InstructorRepositoryTests
+public class CinemaRepositoryTests
 {
     private string _tempDir = null!;
-    private InstructorRepository _repo = null!;
-    private const string _fileName = "instructors.csv";
+    private CinemaRepository _repo = null!;
+    private const string _fileName = "cinemas.csv";
 
-    private InstructorRepository CreateRepositoryWithPath(string folder)
+    private CinemaRepository CreateRepositoryWithPath(string folder)
     {
-        var repo = (InstructorRepository)Activator.CreateInstance(typeof(InstructorRepository), nonPublic: true)!;
-        typeof(InstructorRepository)
+        var repo = (CinemaRepository)Activator.CreateInstance(typeof(CinemaRepository), nonPublic: true)!;
+        typeof(CinemaRepository)
             .GetField("_filePath", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.FlattenHierarchy)!
             .SetValue(repo, Path.Combine(folder, _fileName));
         Directory.CreateDirectory(folder);
@@ -24,7 +24,7 @@ public class InstructorRepositoryTests
     [TestInitialize]
     public async Task Init()
     {
-        _tempDir = Path.Combine(Path.GetTempPath(), "TheInstructorTests_" + Guid.NewGuid().ToString("N"));
+        _tempDir = Path.Combine(Path.GetTempPath(), "TheCinemaTests_" + Guid.NewGuid().ToString("N"));
         _repo = CreateRepositoryWithPath(_tempDir);
         await _repo.InitializeAsync();
     }
@@ -43,44 +43,44 @@ public class InstructorRepositoryTests
     [TestMethod]
     public async Task AddAsync_PersistsSingleInstructor()
     {
-        var instructor = new Instructor("Sergei Dvortsevoy") { };
-        await _repo.AddAsync(instructor);
-
+        var cinema = new Cinema("Cineplex", "123 Main St") { };
+        await _repo.AddAsync(cinema);
         var all = (await _repo.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);
-        Assert.AreEqual("Sergei Dvortsevoy", all[0].Name);
-
+        Assert.AreEqual("Cineplex", all[0].Name);
+        Assert.AreEqual("123 Main St", all[0].Location);
         var filePath = Path.Combine(_tempDir, _fileName);
         Assert.IsTrue(File.Exists(filePath));
-
         var lines = File.ReadAllLines(filePath);
         Assert.AreEqual(1, lines.Length);
-        StringAssert.Contains(lines[0], "Sergei Dvortsevoy");
+        StringAssert.Contains(lines[0], "Cineplex");
     }
 
     [TestMethod]
     public async Task UpdateAsync_ModifiesAndPersists()
     {
-        var instructor = new Instructor("Sergei Dvortsevoy") { };
-        await _repo.AddAsync(instructor);
-        instructor.Name = "Sergei Dvortsevoy Updated";
-        await _repo.UpdateAsync(instructor);
+        var cinema = new Cinema("Cineplex", "123 Main St") { };
+        await _repo.AddAsync(cinema);
+        cinema.Name = "Cineworld";
+        cinema.Location = "456 Elm St";
+        await _repo.UpdateAsync(cinema);
         var all = (await _repo.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);
-        Assert.AreEqual("Sergei Dvortsevoy Updated", all[0].Name);
+        Assert.AreEqual("Cineworld", all[0].Name);
+        Assert.AreEqual("456 Elm St", all[0].Location);
         var filePath = Path.Combine(_tempDir, _fileName);
         Assert.IsTrue(File.Exists(filePath));
         var lines = File.ReadAllLines(filePath);
         Assert.AreEqual(1, lines.Length);
-        StringAssert.Contains(lines[0], "Sergei Dvortsevoy Updated");
+        StringAssert.Contains(lines[0], "Cineworld");
     }
 
     [TestMethod]
     public async Task DeleteAsync_RemovesAndPersists()
     {
-        var instructor = new Instructor("Sergei Dvortsevoy") { };
-        await _repo.AddAsync(instructor);
-        await _repo.DeleteAsync(instructor.Id);
+        var cinema = new Cinema("Cineplex", "123 Main St") { };
+        await _repo.AddAsync(cinema);
+        await _repo.DeleteAsync(cinema.Id);
         var all = (await _repo.GetAllAsync()).ToList();
         Assert.AreEqual(0, all.Count);
         var filePath = Path.Combine(_tempDir, _fileName);
@@ -92,10 +92,9 @@ public class InstructorRepositoryTests
     [TestMethod]
     public async Task InitializeAsync_LoadsExistingFile()
     {
-        // Prepare a CSV file manually
         var filePath = Path.Combine(_tempDir, _fileName);
         var mId = Guid.NewGuid();
-        var line = $"{mId},Sergei Dvortsevoy";
+        var line = $"{mId},Cinemax,Strøget 33 8700 Horsens";
         await File.WriteAllTextAsync(filePath, line, Encoding.UTF8);
 
         // New repository instance
@@ -103,29 +102,27 @@ public class InstructorRepositoryTests
         await repo2.InitializeAsync();
 
         var all = (await repo2.GetAllAsync()).ToList();
+
+
         Assert.AreEqual(1, all.Count);
-        Assert.AreEqual("Sergei Dvortsevoy", all[0].Name);
+        Assert.AreEqual("Cinemax", all[0].Name);
+        Assert.AreEqual("Strøget 33 8700 Horsens", all[0].Location);
     }
 
     [TestMethod]
     public async Task AddRangeAsync_AddsAll()
     {
-        var instructors = new List<Instructor>
+        var cinemas = new List<Cinema>
         {
-            new Instructor("Instructor One"),
-            new Instructor("Instructor Two"),
-            new Instructor("Instructor Three")
+            new Cinema("Cineplex", "123 Main St"),
+            new Cinema("Cineworld", "456 Elm St"),
+            new Cinema("Cinemax", "789 Oak Ave")
         };
-        await _repo.AddRangeAsync(instructors);
+        await _repo.AddRangeAsync(cinemas);
         var all = (await _repo.GetAllAsync()).ToList();
         Assert.AreEqual(3, all.Count);
-        Assert.IsTrue(all.Any(i => i.Name == "Instructor One"));
-        Assert.IsTrue(all.Any(i => i.Name == "Instructor Two"));
-        Assert.IsTrue(all.Any(i => i.Name == "Instructor Three"));
-        var filePath = Path.Combine(_tempDir, _fileName);
-        Assert.IsTrue(File.Exists(filePath));
-        var lines = File.ReadAllLines(filePath);
-        Assert.AreEqual(3, lines.Length);
+        Assert.IsTrue(all.Any(c => c.Name == "Cineplex"));
+        Assert.IsTrue(all.Any(c => c.Name == "Cineworld"));
+        Assert.IsTrue(all.Any(c => c.Name == "Cinemax"));
     }
-
 }
