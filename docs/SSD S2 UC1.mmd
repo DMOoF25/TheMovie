@@ -1,15 +1,16 @@
-﻿sequenceDiagram
+sequenceDiagram
     actor JensPeter as "Jens Peter"
     participant System as "BiografSystem"
 
-    JensPeter->>System: Clicks "Add New Cinema"
-    System-->>JensPeter: Displays cinema form
+    JensPeter->>System: Klikker "Tilføj ny biograf"
+    System-->>JensPeter: Viser biograf vindue
 
-    JensPeter->>System: Submits name, address
-    System-->>System: Validate input
-    alt Valid data
-        System-->>System: Create Cinema object
-        System-->>JensPeter: Confirmation message
-    else Invalid data
-        System-->>JensPeter: Error message
+    JensPeter->>System: Intast navn, adress mm. 
+    System-->>System: Valider intastning
+    System-->>System: Objektet biograf oprettet
+    alt Gemt
+        System-->>System: Valider gemning
+        System-->>JensPeter: bekræftigelse
+    else Ikke gemt
+        System-->>JensPeter: Fejlbesked
     end
