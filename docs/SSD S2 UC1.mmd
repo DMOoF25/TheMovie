@@ -1,13 +1,13 @@
 sequenceDiagram
-    actor JensPeter as "Jens Peter"
+    actor JensPeter as "Aktør"
     participant System as "BiografSystem"
 
     JensPeter->>System: Klikker "Tilføj ny biograf"
     System-->>JensPeter: Viser biograf vindue
 
     JensPeter->>System: Intast navn og adresse 
-    System-->>System: Valider intastning
-    System-->>System: Objektet biograf oprettet
+    
+    
     alt Gemt
         System-->>System: Valider gemning
         System-->>JensPeter: bekræftelse
