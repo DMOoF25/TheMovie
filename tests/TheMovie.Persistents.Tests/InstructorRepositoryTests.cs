@@ -2,7 +2,7 @@
 using TheMovie.Domain.Entities;
 using TheMovie.Infrastructure.Persistents;
 
-namespace TheMovie.Infrastructure.Tests.Repositories;
+namespace TheMovie.Persistents.Tests;
 
 [TestClass]
 public class InstructorRepositoryTests
@@ -104,7 +104,7 @@ public class InstructorRepositoryTests
 
         var all = (await repo2.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);
-        //Assert.AreEqual("Sergei Dvortsevoy", all[0].Name);
+        Assert.AreEqual("Sergei Dvortsevoy", all[0].Name);
     }
 
     [TestMethod]
