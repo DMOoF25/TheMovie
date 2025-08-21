@@ -105,7 +105,7 @@ public class MovieRepositoryTests
         // Prepare a CSV file manually
         var filePath = Path.Combine(_tempDir, "movies.csv");
         var mId = Guid.NewGuid();
-        var line = $"{mId},Interstellar,169,{Genre.Music}";
+        var line = $"{mId},Interstellar,169,10-01-2010,{Genre.Music}";
         await File.WriteAllTextAsync(filePath, line, Encoding.UTF8);
 
         // New repository instance
