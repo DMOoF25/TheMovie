@@ -2,7 +2,7 @@
 
 namespace TheMovie.Application.Abstractions;
 
-public interface IMovieRepository : IRepository<Movie>
+public interface IMovieRepository : IRepositoryBase<Movie>
 {
     /*
     Task<IEnumerable<Movie>> ListByGenreAsync(Genre genre, CancellationToken cancellationToken = default);
