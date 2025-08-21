@@ -4,9 +4,11 @@ using TheMovie.Application.Abstractions;
 
 namespace TheMovie.Infrastructure.Persistents;
 
-public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
+public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     where TEntity : class
 {
+    protected readonly SemaphoreSlim _ioLock = new(1, 1);
+
     /// <summary>
     /// Fully-qualified path to the CSV persistence file for this entity type.
     /// Format: <c>%LOCALAPPDATA%\TheMovie\{entityname}s.csv</c>.
