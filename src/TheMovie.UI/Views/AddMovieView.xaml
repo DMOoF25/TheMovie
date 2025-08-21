@@ -11,6 +11,7 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <local:DateOnlyToDateTimeConverter x:Key="DateOnlyToDateTimeConverter"/>
     </Page.Resources>
 
     <!-- Left: Add movie form -->
@@ -25,25 +26,23 @@
                             MaxHeight="20"
                             MinWidth="250" Margin="0 0 20 0"/>
 
-                    <TextBlock Text="Varighed (min):" Margin="0 0 6 0"/>
+                    <TextBlock Text="Varighed (min):" Margin="0 0 20 0"/>
                     <TextBox VerticalAlignment="Top"
                             Text="{Binding DurationText, UpdateSourceTrigger=PropertyChanged}"
                             PreviewTextInput="Duration_PreviewTextInput"
                             MinWidth="60"
                             MaxHeight="20"/>
-                    <TextBlock Text="Genrer:" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
+                    <TextBlock Text="Primiære dato:" Margin="0 0 20 0"/>
+                    <!-- Date picker for PremiereDate -->
+                    <DatePicker
+                        SelectedDate="{Binding PremiereDate, Mode=TwoWay, Converter={StaticResource DateOnlyToDateTimeConverter}}"
+                        Margin="0 0 20 0"
+                        Width="250"
+                        HorizontalAlignment="Left"/>
 
-                    <!--<ScrollViewer Height="120" VerticalScrollBarVisibility="Auto" Margin="0 4 0 8">
-                            <ItemsControl ItemsSource="{Binding GenreOptions}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>-->
-
-                    <!-- Multi-select dropdown -->
+                    <TextBlock Text="Genrer:" Margin="0 0 20 0"/>
                     <ComboBox x:Name="GenresCombo"
                       ItemsSource="{Binding GenreOptions}"
                       Width="250"

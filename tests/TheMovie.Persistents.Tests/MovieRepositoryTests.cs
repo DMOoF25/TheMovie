@@ -44,7 +44,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task AddAsync_PersistsSingleMovie()
     {
-        var movie = new Movie("Inception", 148) { Genres = Genre.Action | Genre.Mystery };
+        var movie = new Movie("Inception", 148, DateOnly.FromDateTime(DateTime.Now)) { Genres = Genre.Action | Genre.Mystery };
         await _repo.AddAsync(movie);
 
         var all = (await _repo.GetAllAsync()).ToList();
@@ -62,7 +62,7 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task UpdateAsync_ModifiesAndPersists()
     {
-        var movie = new Movie("Old", 90) { Genres = Genre.Drama };
+        var movie = new Movie("Old", 90, DateOnly.FromDateTime(DateTime.Now)) { Genres = Genre.Drama };
         await _repo.AddAsync(movie);
 
         movie.Title = "New";
@@ -82,8 +82,8 @@ public class MovieRepositoryTests
     [TestMethod]
     public async Task DeleteAsync_RemovesAndPersists()
     {
-        var m1 = new Movie("A", 100);
-        var m2 = new Movie("B", 110);
+        var m1 = new Movie("A", 100, DateOnly.FromDateTime(DateTime.Now));
+        var m2 = new Movie("B", 110, DateOnly.FromDateTime(DateTime.Now));
         await _repo.AddAsync(m1);
         await _repo.AddAsync(m2);
 
@@ -124,9 +124,9 @@ public class MovieRepositoryTests
     {
         var movies = new[]
         {
-            new Movie("M1", 90),
-            new Movie("M2", 91),
-            new Movie("M3", 92)
+            new Movie("M1", 90, DateOnly.FromDateTime(DateTime.Now)),
+            new Movie("M2", 91, DateOnly.FromDateTime(DateTime.Now)),
+            new Movie("M3", 92, DateOnly.FromDateTime(DateTime.Now))
         };
 
         await _repo.AddRangeAsync(movies);
