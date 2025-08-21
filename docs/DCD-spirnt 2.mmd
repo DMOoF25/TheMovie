@@ -6,7 +6,10 @@
             +string Title
             +int Duration
             +Genre Genre
-            +Movie(string title, int duration)
+            +DateOnly Premiere
+            +Guid InstructorId
+            +Movie()
+            +Movie(string title, int duration, Guid instructorId = default)
             +HasGenre(Genre genre) bool
             +AddGenre(Genre genre) void
             +RemoveGenre(Genre genre) void
@@ -15,29 +18,36 @@
         class Instructor {
             +Guid Id
             +string Name
+            +Instructor()
+            +Instructor(string name)
         }
 
         class Cinema {
             +Guid Id
             +string Name
-            +string Address
+            +string Location
+            +Cinema()
+            +Cinema(string name, string location)
         }
 
-        class Room {
+        class Hall {
             +Guid Id
+            +
             +string Name
-            +int Capacity
-            +Room(string name, int capacity, Cinima cinima)
+            +Guid CinemaId
+            +Hall()
+            +Hall(string name, Guid cinemaId)
         }
 
         class Screening {
             +Guid Id
             +DateTime StartTime
             +DateTime EndTime
-            +Movie Movie
-            +Screening(Movie movie, Cinima cinima, Instuctor instuctor, DateTime startTime, DateTime endTime)
+            +Guid MovieId
+            +Guid HallId
+            +Screening()
+            +Screening(Guid movie, Guid hallId, DateTime startTime, DateTime endTime)
         }
-
     }
 
     namespace TheMovie.Domain.ValueObjects {
@@ -65,15 +75,23 @@
         }
 
         class InstructorRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
         }
 
         class CinemaRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
         }
 
-        class RoomRepository {
+        class HallRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
         }
 
         class ScreeningRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
         }
 
         class RepositoryBase~TEntity~ {
@@ -89,7 +107,7 @@
             +AddAsync(TEntity entity, CancellationToken cancellationToken = default) Task
             +AddRangeAsync(IEnumerable~TEntity~ entities, CancellationToken cancellationToken = default) Task
             +GetByIdAsync(Guid id, CancellationToken cancellationToken = default) Task~TEntity~
-            +GetAllAsync(CancellationToken cancellationToken = default) Task~IEnumerable<TEntity>~
+            +GetAllAsync(CancellationToken cancellationToken = default) Task~IEnumerable~TEntity~~
             +UpdateAsync(TEntity entity, CancellationToken cancellationToken = default) Task
             +DeleteAsync(TEntity entity, CancellationToken cancellationToken = default) Task
         }
@@ -100,7 +118,7 @@
         }
         class ICinemaRepository {
         }
-        class IRoomRepository {
+        class IHallRepository {
         }
         class IScreeningRepository {
         }
@@ -111,7 +129,7 @@
     <<interface>> IMovieRepository
     <<interface>> IInstructorRepository
     <<interface>> ICinemaRepository
-    <<interface>> IRoomRepository
+    <<interface>> IHallRepository
     <<interface>> IScreeningRepository
     <<abstract>> RepositoryBase
     <<enumeration>> Genre
@@ -121,24 +139,24 @@
     Movie --* MovieRepository : manages
     Instructor --* InstructorRepository : manages
     Cinema --* CinemaRepository : manages
-    Room --* RoomRepository : manages
+    Hall --* HallRepository : manages
     Screening --* ScreeningRepository : manages
 
     MovieRepository ..|> IMovieRepository : "implements"
     InstructorRepository ..|> IInstructorRepository : "implements"
     CinemaRepository ..|> ICinemaRepository : "implements"
-    RoomRepository ..|> IRoomRepository : "implements"
+    HallRepository ..|> IHallRepository : "implements"
     ScreeningRepository ..|> IScreeningRepository : "implements"
     RepositoryBase ..|> IRepository : "implements"
 
     MovieRepository ..|> RepositoryBase : "inherits"
     InstructorRepository ..|> RepositoryBase : "inherits"
     CinemaRepository ..|> RepositoryBase : "inherits"
-    RoomRepository ..|> RepositoryBase : "inherits"
+    HallRepository ..|> RepositoryBase : "inherits"
     ScreeningRepository ..|> RepositoryBase : "inherits"
 
     IMovieRepository ..|> IRepository : "inherits"
     IInstructorRepository ..|> IRepository : "inherits"
     ICinemaRepository ..|> IRepository : "inherits"
-    IRoomRepository ..|> IRepository : "inherits"
+    IHallRepository ..|> IRepository : "inherits"
     IScreeningRepository ..|> IRepository : "inherits"
