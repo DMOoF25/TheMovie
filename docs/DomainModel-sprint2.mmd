@@ -3,6 +3,7 @@
         Titel
         Varighed
         Premieredato
+        Genre
     }
 
     class Instruktør {
@@ -24,22 +25,7 @@
         Tidspunkt
     }
 
-    class Genre {
-        <<enumeration>>
-        Action
-        Eventyr
-        Biografi
-        Komedie
-        Krimi
-        Drama
-        Historie
-        Gyser
-        Musik
-        Mysterie
-        Romantik
-        Thriller
-        Krig
-    }
+    
 
     Film "1..*" -- "1..*" Genre
     Film "1..*" -- "1..*" Instruktør
