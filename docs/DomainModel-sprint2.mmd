@@ -24,11 +24,8 @@
         Dato
         Tidspunkt
     }
-
-    
-
    
-    Film "1..*" -- "1..*" Instruktør
-    Visning "1..*" -- "1..*" Film
-    Visning "1..*" -- "1..*" Sal
-    Sal "1..*" -- "1..*" Biograf
+    Film "1..*" -- "1" Instruktør
+    Visning "1..*" -- "1" Film
+    Visning "0..*" -- "1" Sal
+    Sal "1..*" -- "1" Biograf
