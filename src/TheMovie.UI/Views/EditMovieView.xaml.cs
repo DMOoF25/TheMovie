@@ -3,48 +3,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
-using TheMovie.Infrastructure.Persistents;
 using TheMovie.UI.ViewModels;
 
 namespace TheMovie.UI.Views;
 
-public partial class AddMovieView : Page
+public partial class EditMovieView : Page
 {
     private static readonly Regex _digits = new(@"^[0-9]+$", RegexOptions.Compiled);
     private MoviesListViewModel? _moviesListVm;
 
-    public AddMovieView() : this(ResolveViewModel())
-    {
-    }
-
-    public AddMovieView(MovieViewModel vm)
+    public EditMovieView()
     {
         InitializeComponent();
 
-        DataContext = vm;
-
-        // Resolve list VM (from embedded control once loaded)
-        Loaded += (_, _) =>
-        {
-            _moviesListVm = (MoviesListControl.DataContext as MoviesListViewModel) ?? ResolveMoviesListViewModel();
-            vm.MovieSaved += (_, movie) => _moviesListVm?.AddOrUpdate(movie);
-        };
-    }
-
-    private static MovieViewModel ResolveViewModel()
-    {
-        if (App.HostInstance is not null)
-            return App.HostInstance.Services.GetRequiredService<MovieViewModel>();
-
-        return new MovieViewModel(new MovieRepository());
-    }
-
-    private static MoviesListViewModel ResolveMoviesListViewModel()
-    {
-        if (App.HostInstance is not null)
-            return App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
-
-        return new MoviesListViewModel(new MovieRepository());
+        DataContext = App.HostInstance.Services.GetRequiredService<MovieViewModel>();
+        _moviesListVm = App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
     }
 
     private void Duration_PreviewTextInput(object sender, TextCompositionEventArgs e)
