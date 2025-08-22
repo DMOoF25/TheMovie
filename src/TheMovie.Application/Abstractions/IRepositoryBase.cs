@@ -13,7 +13,7 @@ public interface IRepositoryBase<TEntity>
     /// (e.g., loading persisted data into memory). Safe to call multiple times (should be idempotent).
     /// </summary>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
-    Task InitializeAsync(CancellationToken cancellationToken = default);
+    //Task InitializeAsync(CancellationToken cancellationToken = default);
 
     #region Create operations
 

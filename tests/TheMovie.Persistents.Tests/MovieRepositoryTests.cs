@@ -27,7 +27,8 @@ public class MovieRepositoryTests
     {
         _tempDir = Path.Combine(Path.GetTempPath(), "TheMovieTests_" + Guid.NewGuid().ToString("N"));
         _repo = CreateRepositoryWithPath(_tempDir);
-        await _repo.InitializeAsync();
+
+        await Task.CompletedTask;
     }
 
     [TestCleanup]
@@ -40,6 +41,18 @@ public class MovieRepositoryTests
         }
         catch { /* ignore */ }
     }
+
+    #region Create Tests
+    #endregion
+
+    #region Read Tests
+    #endregion
+
+    #region Update Tests
+    #endregion
+
+    #region Delete Tests
+    #endregion
 
     [TestMethod]
     public async Task AddAsync_PersistsSingleMovie()
@@ -110,7 +123,7 @@ public class MovieRepositoryTests
 
         // New repository instance
         var repo2 = CreateRepositoryWithPath(_tempDir);
-        await repo2.InitializeAsync();
+        //await repo2.InitializeAsync();
 
         var all = (await repo2.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);

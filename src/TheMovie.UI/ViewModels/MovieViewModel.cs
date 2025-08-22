@@ -3,10 +3,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
 using TheMovie.Domain.ValueObjects;
 using TheMovie.UI.Commands;
+using TheMovie.UI.Views;
 
 namespace TheMovie.UI.ViewModels;
 
@@ -84,12 +86,11 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
-    // NEW: Event raised after a movie is successfully saved.
     public event EventHandler<Movie>? MovieSaved;
 
-    public MovieViewModel(IMovieRepository repository)
+    public MovieViewModel()
     {
-        _repository = repository;
+        _repository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
         LoadGenreOptions();
 
         SaveCommand = new RelayCommand(Save, CanSave);
@@ -106,24 +107,28 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
 
         foreach (var opt in GenreOptions)
-            opt.PropertyChanged += (_, _) => RefreshCommandStates();
+        {
+            opt.PropertyChanged += (_, _) =>
+            {
+                RefreshCommandStates();
+                // Force re-evaluation of ComboBox.Text binding (uses converter on GenreOptions)
+                OnPropertyChanged(nameof(GenreOptions));
+            };
+        }
     }
 
-    private bool CanSave()
-    {
-        if (IsSaving) return false;
-        if (string.IsNullOrWhiteSpace(Title)) return false;
-        if (PremiereDate < DateOnly.FromDateTime(DateTime.Now)) return false;
-        if (!TryParseDuration(out _)) return false;
-        if (GetSelectedGenres() == Genre.None) return false;
-        return true;
-    }
+    private bool CanSave() =>
+        !IsSaving
+        && !string.IsNullOrWhiteSpace(Title)
+        && PremiereDate >= DateOnly.FromDateTime(DateTime.Now)
+        && TryParseDuration(out _)
+        && GetSelectedGenres() != Genre.None;
 
-    private bool CanReset()
-        => !string.IsNullOrEmpty(Title) ||
-           !string.IsNullOrEmpty(DurationText) ||
-           PremiereDate != DateOnly.FromDateTime(DateTime.Now) ||
-           GenreOptions.Any(o => o.IsSelected);
+    private bool CanReset() =>
+        !string.IsNullOrEmpty(Title)
+        || !string.IsNullOrEmpty(DurationText)
+        || PremiereDate != DateOnly.FromDateTime(DateTime.Now)
+        || GenreOptions.Any(o => o.IsSelected);
 
     private void Save()
     {
@@ -151,7 +156,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
             _repository.AddAsync(movie).GetAwaiter().GetResult();
 
-            MovieSaved?.Invoke(this, movie); // Notify listeners
+            MovieSaved?.Invoke(this, movie);
 
             MessageBox.Show("Movie saved.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Reset();
@@ -180,7 +185,9 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     private void Cancel()
     {
         Reset();
-        MessageBox.Show("Input cleared.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        var mainFrame = (System.Windows.Application.Current.MainWindow as MainWindow)?.MainFrame;
+        mainFrame?.Navigate(new MainPage());
     }
 
     private bool TryParseDuration(out int value)

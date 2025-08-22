@@ -16,8 +16,9 @@
                         </MenuItem.ToolTip>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Film Db">
-                    <MenuItem Header="Tilføj Film" Click="MenuItemAddMovie_Click"/>
+                <MenuItem Header="Db">
+                    <MenuItem Header="Film" Click="MenuItemEditMovie_Click"/>
+                    <MenuItem Header="Biograf" Click="MenuItemEditCinema_Click"/>
                 </MenuItem>
             </Menu>
         </StackPanel>

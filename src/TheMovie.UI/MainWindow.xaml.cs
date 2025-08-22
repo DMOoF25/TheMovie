@@ -18,9 +18,13 @@ public partial class MainWindow : Window
     {
         System.Windows.Application.Current.Shutdown();
     }
-    private void MenuItemAddMovie_Click(object sender, RoutedEventArgs e)
+    private void MenuItemEditMovie_Click(object sender, RoutedEventArgs e)
     {
-        MainFrame.Navigate(new AddMovieView());
+        MainFrame.Navigate(new EditMovieView());
+    }
+    private void MenuItemEditCinema_Click(object sender, RoutedEventArgs e)
+    {
+        //MainFrame.Navigate(new EditCinemaView());
     }
     private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
     {

@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Data;
 using System.Windows.Input;
 using TheMovie.Application.Abstractions;
-using TheMovie.Domain.Entities;
 using TheMovie.UI.Commands;
 
 namespace TheMovie.UI.ViewModels;
@@ -14,11 +12,8 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     private readonly IMovieRepository _repository;
     private bool _isLoading;
     private string? _error;
-    private readonly object _sync = new();
 
-    public ObservableCollection<MovieRowViewModel> Movies { get; } = new();
-    public ICollectionView MoviesView { get; }
-
+    public ObservableCollection<MovieListItemViewModel> Movies { get; } = new();
     public ICommand RefreshCommand { get; }
 
     public bool IsLoading
@@ -36,30 +31,20 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     public MoviesListViewModel(IMovieRepository repository)
     {
         _repository = repository;
-        _repository.InitializeAsync(); // Ensure to have loaded data in view
-        MoviesView = CollectionViewSource.GetDefaultView(Movies);
-        MoviesView.SortDescriptions.Add(new SortDescription(nameof(MovieRowViewModel.Title), ListSortDirection.Ascending));
-
-        RefreshCommand = new RelayCommand(async () => await LoadAsync(), () => !IsLoading);
-
-        // Initial asynchronous load (fire & forget)
-        _ = LoadAsync();
+        RefreshCommand = new RelayCommand(async () => await RefreshAsync(), () => !IsLoading);
+        _ = RefreshAsync(); // initial load
     }
 
-    public async Task LoadAsync()
+    public async Task RefreshAsync()
     {
         Error = null;
         IsLoading = true;
         try
         {
-            var all = await _repository.GetAllAsync();
-            lock (_sync)
-            {
-                Movies.Clear();
-                foreach (var m in all.OrderBy(m => m.Title))
-                    Movies.Add(new MovieRowViewModel(m));
-            }
-            MoviesView.Refresh();
+            var movies = await _repository.GetAllAsync().ConfigureAwait(true);
+            Movies.Clear();
+            foreach (var m in movies.OrderBy(m => m.Title))
+                Movies.Add(new MovieListItemViewModel(m));
         }
         catch (Exception ex)
         {
@@ -72,24 +57,7 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
         }
     }
 
-    public void AddOrUpdate(Movie movie)
-    {
-        lock (_sync)
-        {
-            var existing = Movies.FirstOrDefault(r => r.Id == movie.Id);
-            if (existing is null)
-            {
-                Movies.Add(new MovieRowViewModel(movie));
-            }
-            else
-            {
-                existing.RefreshFromSource();
-            }
-        }
-        MoviesView.Refresh();
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? n = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
+    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

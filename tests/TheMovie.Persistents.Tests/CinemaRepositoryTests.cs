@@ -40,6 +40,19 @@ public class CinemaRepositoryTests
         catch { /* ignore */ }
     }
 
+    #region Create Tests
+    #endregion
+
+    #region Read Tests
+    #endregion
+
+    #region Update Tests
+    #endregion
+
+    #region Delete Tests
+    #endregion
+
+
     [TestMethod]
     public async Task AddAsync_PersistsSingleInstructor()
     {
@@ -55,6 +68,24 @@ public class CinemaRepositoryTests
         Assert.AreEqual(1, lines.Length);
         StringAssert.Contains(lines[0], "Cineplex");
     }
+
+    [TestMethod]
+    public async Task AddRangeAsync_AddsAll()
+    {
+        List<Cinema> cinemas =
+        [
+            new("Cineplex", "123 Main St"),
+            new("Cineworld", "456 Elm St"),
+            new("Cinemax", "789 Oak Ave")
+        ];
+        await _repo.AddRangeAsync(cinemas);
+        var all = (await _repo.GetAllAsync()).ToList();
+        Assert.AreEqual(3, all.Count);
+        Assert.IsTrue(all.Any(c => c.Name == "Cineplex"));
+        Assert.IsTrue(all.Any(c => c.Name == "Cineworld"));
+        Assert.IsTrue(all.Any(c => c.Name == "Cinemax"));
+    }
+
 
     [TestMethod]
     public async Task UpdateAsync_ModifiesAndPersists()
@@ -109,20 +140,4 @@ public class CinemaRepositoryTests
         Assert.AreEqual("Strøget 33 8700 Horsens", all[0].Location);
     }
 
-    [TestMethod]
-    public async Task AddRangeAsync_AddsAll()
-    {
-        var cinemas = new List<Cinema>
-        {
-            new Cinema("Cineplex", "123 Main St"),
-            new Cinema("Cineworld", "456 Elm St"),
-            new Cinema("Cinemax", "789 Oak Ave")
-        };
-        await _repo.AddRangeAsync(cinemas);
-        var all = (await _repo.GetAllAsync()).ToList();
-        Assert.AreEqual(3, all.Count);
-        Assert.IsTrue(all.Any(c => c.Name == "Cineplex"));
-        Assert.IsTrue(all.Any(c => c.Name == "Cineworld"));
-        Assert.IsTrue(all.Any(c => c.Name == "Cinemax"));
-    }
 }
