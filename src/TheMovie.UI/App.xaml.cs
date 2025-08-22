@@ -32,7 +32,7 @@ public partial class App : System.Windows.Application
 
                 services.AddTransient<MoviesListViewModel>();
                 services.AddTransient<MovieViewModel>();
-                services.AddTransient<AddMovieView>();
+                services.AddTransient<EditMovieView>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();

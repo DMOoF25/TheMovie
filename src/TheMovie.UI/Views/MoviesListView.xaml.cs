@@ -1,30 +1,28 @@
-﻿using System.Windows.Controls;
-using Microsoft.Extensions.DependencyInjection;
-using TheMovie.Infrastructure.Persistents;
-using TheMovie.UI.ViewModels;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace TheMovie.UI.Views;
-
-public partial class MoviesListView : UserControl
+namespace TheMovie.UI.Views
 {
-    public MoviesListView() : this(ResolveViewModel())
+    /// <summary>
+    /// Interaction logic for MoviesListView.xaml
+    /// </summary>
+    public partial class MoviesListView : UserControl
     {
+        public MoviesListView()
+        {
+            InitializeComponent();
+        }
     }
-
-    public MoviesListView(MoviesListViewModel vm)
-    {
-        InitializeComponent();
-
-        DataContext = vm;
-    }
-
-    private static MoviesListViewModel ResolveViewModel()
-    {
-        if (App.HostInstance is not null)
-            return App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
-
-        return new MoviesListViewModel(new MovieRepository());
-    }
-
-    public MoviesListViewModel ViewModel => (MoviesListViewModel)DataContext;
 }

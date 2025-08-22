@@ -12,30 +12,31 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <local:DateOnlyToDateTimeConverter x:Key="DateOnlyToDateTimeConverter"/>
+        <local:SelectedGenresTextConverter x:Key="SelectedGenresTextConverter"/>
     </Page.Resources>
 
-    <!-- Left: Add movie form -->
     <StackPanel Orientation="Vertical" Margin="0 0 8 0">
-        <TextBlock Text="Tilføj film" FontSize="24" FontWeight="Bold" Margin="0 0 0 10"/>
+        <TextBlock Text="Tilføj / Rediger film" FontSize="24" FontWeight="Bold" Margin="0 0 0 10"/>
+
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
                     <TextBlock Text="Titel:" Margin="0 0 6 0"/>
                     <TextBox VerticalAlignment="Top"
-                            Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
-                            MaxHeight="20"
-                            MinWidth="250" Margin="0 0 20 0"/>
+                             Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                             MaxHeight="20"
+                             MinWidth="250" Margin="0 0 20 0"/>
 
                     <TextBlock Text="Varighed (min):" Margin="0 0 20 0"/>
                     <TextBox VerticalAlignment="Top"
-                            Text="{Binding DurationText, UpdateSourceTrigger=PropertyChanged}"
-                            PreviewTextInput="Duration_PreviewTextInput"
-                            MinWidth="60"
-                            MaxHeight="20"/>
+                             Text="{Binding DurationText, UpdateSourceTrigger=PropertyChanged}"
+                             PreviewTextInput="Duration_PreviewTextInput"
+                             MinWidth="60"
+                             MaxHeight="20"/>
                 </StackPanel>
+
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
                     <TextBlock Text="Primiære dato:" Margin="0 0 20 0"/>
-                    <!-- Date picker for PremiereDate -->
                     <DatePicker
                         SelectedDate="{Binding PremiereDate, Mode=TwoWay, Converter={StaticResource DateOnlyToDateTimeConverter}}"
                         Margin="0 0 20 0"
@@ -44,35 +45,38 @@
 
                     <TextBlock Text="Genrer:" Margin="0 0 20 0"/>
                     <ComboBox x:Name="GenresCombo"
-                      ItemsSource="{Binding GenreOptions}"
-                      Width="250"
-                      IsEditable="False"
-                      MaxDropDownHeight="160"
-                      Padding="2"
-                      HorizontalAlignment="Left">
+                              ItemsSource="{Binding GenreOptions}"
+                              Width="250"
+                              IsEditable="True"
+                              IsReadOnly="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchEnabled="False"
+                              Padding="2"
+                              SelectionChanged="GenresCombo_SelectionChanged"
+                              Text="{Binding GenreOptions, Mode=OneWay, Converter={StaticResource SelectedGenresTextConverter}}"
+                              HorizontalAlignment="Left">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox Content="{Binding Name}"
-                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                  Padding="2"/>
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          Padding="2"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ComboBoxItem">
-                                <!-- Prevent default selection closing the dropdown -->
                                 <EventSetter Event="PreviewMouseLeftButtonDown"
-                                     Handler="GenresComboItem_PreviewMouseLeftButtonDown"/>
+                                             Handler="GenresComboItem_PreviewMouseLeftButtonDown"/>
                             </Style>
                         </ComboBox.ItemContainerStyle>
                     </ComboBox>
                 </StackPanel>
 
                 <TextBlock
-                       Text="{Binding Error}"
-                       Foreground="Red"
-                       TextWrapping="Wrap"
-                       Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"
-                       Margin="0 0 0 6"/>
+                    Text="{Binding Error}"
+                    Foreground="Red"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"
+                    Margin="0 0 0 6"/>
             </StackPanel>
         </StackPanel>
 
@@ -82,9 +86,7 @@
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
 
-        <!-- Right: Movie list component -->
+        <!-- Movies list user control -->
         <views:MoviesListView x:Name="MoviesListControl"/>
-
     </StackPanel>
-
 </Page>

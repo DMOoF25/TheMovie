@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +15,25 @@ public partial class EditMovieView : Page
     {
         InitializeComponent();
 
-        DataContext = App.HostInstance.Services.GetRequiredService<MovieViewModel>();
+        var vm = App.HostInstance.Services.GetRequiredService<MovieViewModel>();
+        DataContext = vm;
+
         _moviesListVm = App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
+        MoviesListControl.DataContext = _moviesListVm;
+
+        // Auto-refresh list after save
+        vm.MovieSaved += (_, __) =>
+        {
+            if (_moviesListVm?.RefreshCommand is { } cmd && cmd.CanExecute(null))
+                cmd.Execute(null);
+        };
+
+        // Ensure initial refresh after the page is loaded
+        Loaded += async (_, __) =>
+        {
+            if (_moviesListVm is not null)
+                await _moviesListVm.RefreshAsync();
+        };
     }
 
     private void Duration_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -27,22 +43,22 @@ public partial class EditMovieView : Page
     {
         if (sender is ComboBoxItem cbi && cbi.DataContext is { } dataContext)
         {
-            // Find the CheckBox inside and toggle it manually without closing the dropdown
-            if (cbi.ContentTemplate?.LoadContent() is FrameworkElement fe)
-            {
-                // Not used (template load creates new instance), so instead toggle via reflection of bound property if possible.
-            }
-
-            // Expect bound object has an IsSelected boolean property
             var prop = dataContext.GetType().GetProperty("IsSelected");
             if (prop is not null && prop.PropertyType == typeof(bool))
             {
                 bool current = (bool)prop.GetValue(dataContext)!;
                 prop.SetValue(dataContext, !current);
             }
+            e.Handled = true; // keep dropdown open
+        }
+    }
 
-            // Prevent ComboBox selection logic (keeps dropdown open)
-            e.Handled = true;
+    private void GenresCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox combo && combo.Items.Count > 0)
+        {
+            // Ensure the dropdown remains open after selection
+            combo.IsDropDownOpen = true;
         }
     }
 }

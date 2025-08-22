@@ -40,6 +40,18 @@ public class InstructorRepositoryTests
         catch { /* ignore */ }
     }
 
+    #region Create Tests
+    #endregion
+
+    #region Read Tests
+    #endregion
+
+    #region Update Tests
+    #endregion
+
+    #region Delete Tests
+    #endregion
+
     [TestMethod]
     public async Task AddAsync_PersistsSingleInstructor()
     {

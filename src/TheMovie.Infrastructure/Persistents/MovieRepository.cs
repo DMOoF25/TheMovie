@@ -12,6 +12,7 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 {
     public MovieRepository() : base()
     {
+
     }
 
     protected override async Task LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default)

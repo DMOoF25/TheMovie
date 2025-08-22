@@ -24,7 +24,7 @@ public partial class MainWindow : Window
     }
     private void MenuItemEditCinema_Click(object sender, RoutedEventArgs e)
     {
-        MainFrame.Navigate(new EditCinemaView());
+        //MainFrame.Navigate(new EditCinemaView());
     }
     private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
     {
