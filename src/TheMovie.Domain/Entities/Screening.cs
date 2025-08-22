@@ -24,15 +24,6 @@ public class Screening
     public DateTime StartTime { get; set; }
 
     /// <summary>
-    /// The UTC date and time at which the screening ends.
-    /// </summary>
-    /// <remarks>
-    /// Must be greater than <see cref="StartTime"/>. This is not enforced here;
-    /// validation should occur in application or domain services.
-    /// </remarks>
-    public DateTime EndTime { get; set; }
-
-    /// <summary>
     /// Identifier of the movie being shown.
     /// </summary>
     public Guid MovieId { get; set; }
@@ -54,14 +45,12 @@ public class Screening
     /// Initializes a new instance of <see cref="Screening"/> with the specified parameters.
     /// </summary>
     /// <param name="startTime">The UTC start time of the screening.</param>
-    /// <param name="endTime">The UTC end time of the screening (must be after <paramref name="startTime"/>).</param>
     /// <param name="movieId">The identifier of the movie.</param>
     /// <param name="hallId">The identifier of the hall.</param>
-    public Screening(DateTime startTime, DateTime endTime, Guid movieId, Guid hallId)
+    public Screening(DateTime startTime, Guid movieId, Guid hallId)
     {
         Id = Guid.NewGuid();
         StartTime = startTime;
-        EndTime = endTime;
         MovieId = movieId;
         HallId = hallId;
     }
