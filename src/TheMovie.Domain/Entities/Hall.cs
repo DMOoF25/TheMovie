@@ -27,15 +27,6 @@ public class Hall
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Maximum seating capacity of the hall.
-    /// </summary>
-    /// <remarks>
-    /// Represents the total number of seats available for booking (excluding staff or blocked seats).
-    /// Must be a non-negative integer; enforcement is external to this entity.
-    /// </remarks>
-    public int Capacity { get; set; }
-
-    /// <summary>
     /// Identifier of the cinema (parent aggregate) to which this hall belongs.
     /// </summary>
     public Guid CinemaId { get; set; }
@@ -58,11 +49,10 @@ public class Hall
     /// Generates a new <see cref="Guid"/> for <see cref="Id"/>. Does not perform validation;
     /// caller is responsible for ensuring correct values.
     /// </remarks>
-    public Hall(string name, int capacity, Guid cinemaId)
+    public Hall(string name, Guid cinemaId)
     {
         Id = Guid.NewGuid();
         Name = name;
-        Capacity = capacity;
         CinemaId = cinemaId;
     }
 }
