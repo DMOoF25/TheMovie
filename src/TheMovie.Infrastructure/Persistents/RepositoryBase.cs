@@ -70,8 +70,9 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
 
         Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
 
-        // Comment this line out when testing to avoid loading data
+#if !TESTS
         LoadFromCvsAsync(_filePath).ConfigureAwait(false);
+#endif
     }
 
     #region CRUD Operations
