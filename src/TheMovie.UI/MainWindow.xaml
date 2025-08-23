@@ -16,9 +16,10 @@
                         </MenuItem.ToolTip>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Db">
+                <MenuItem Header="Admin">
                     <MenuItem Header="Film" Click="MenuItemEditMovie_Click"/>
                     <MenuItem Header="Biograf" Click="MenuItemEditCinema_Click"/>
+                    <MenuItem Header="Instruktør" Click="MenuItemEditInstructor_Click"/>
                 </MenuItem>
             </Menu>
         </StackPanel>
