@@ -69,7 +69,8 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
         _setId = idSetter;
 
         Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
-        // Load existing data from CSV file into memory
+
+        // Comment this line out when testing to avoid loading data
         LoadFromCvsAsync(_filePath).ConfigureAwait(false);
     }
 
@@ -266,8 +267,7 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        //await LoadFromCvsAsync(_filePath, cancellationToken).ConfigureAwait(false);
-        await _ioLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await LoadFromCvsAsync(_filePath, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
