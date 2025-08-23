@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ public partial class EditMovieView : Page
 {
     private static readonly Regex _digits = new(@"^[0-9]+$", RegexOptions.Compiled);
     private MoviesListViewModel? _moviesListVm;
+    private MovieViewModel? _vm;
 
     public EditMovieView()
     {
@@ -17,9 +19,14 @@ public partial class EditMovieView : Page
 
         var vm = App.HostInstance.Services.GetRequiredService<MovieViewModel>();
         DataContext = vm;
+        _vm = vm;
 
         _moviesListVm = App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
         MoviesListControl.DataContext = _moviesListVm;
+
+        // Populate form when a movie is selected in the list
+        if (_moviesListVm is not null)
+            _moviesListVm.PropertyChanged += MoviesListVm_PropertyChanged;
 
         // Auto-refresh list after save
         vm.MovieSaved += (_, __) =>
@@ -34,6 +41,16 @@ public partial class EditMovieView : Page
             if (_moviesListVm is not null)
                 await _moviesListVm.RefreshAsync();
         };
+    }
+
+    private async void MoviesListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MoviesListViewModel.SelectedMovie)
+            && _moviesListVm?.SelectedMovie is { } item
+            && _vm is not null)
+        {
+            await _vm.LoadAsync(item.Id);
+        }
     }
 
     private void Duration_PreviewTextInput(object sender, TextCompositionEventArgs e)

@@ -30,9 +30,16 @@ public partial class App : System.Windows.Application
                     .AddMovieApplication()
                     .AddMovieInfrastructure();
 
+                // Movies
                 services.AddTransient<MoviesListViewModel>();
                 services.AddTransient<MovieViewModel>();
                 services.AddTransient<EditMovieView>();
+
+                // Cinemas
+                services.AddTransient<CinemasListViewModel>();
+                services.AddTransient<CinemaViewModel>();
+                services.AddTransient<EditCinemaView>();
+
                 services.AddSingleton<MainWindow>();
             })
             .Build();

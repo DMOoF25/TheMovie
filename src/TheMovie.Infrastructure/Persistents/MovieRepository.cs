@@ -6,13 +6,12 @@ using TheMovie.Domain.ValueObjects;
 namespace TheMovie.Infrastructure.Persistents;
 
 /// <summary>
-/// In-memory Movie repository with simple genre filtering helpers.
+/// Persists movies in a CSV file with basic genre filtering capabilities.
 /// </summary>
 public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 {
     public MovieRepository() : base()
     {
-
     }
 
     protected override async Task LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default)

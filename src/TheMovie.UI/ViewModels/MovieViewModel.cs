@@ -16,86 +16,113 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 {
     private readonly IMovieRepository _repository;
 
+    private Guid? _currentId;
     private string _title = string.Empty;
     private string _durationText = string.Empty;
     private DateOnly _premiereDate = DateOnly.FromDateTime(DateTime.Now);
     private bool _isSaving;
     private string? _error;
+    private bool _isEditMode;
 
     public string Title
     {
         get => _title;
-        set
-        {
-            if (_title == value) return;
-            _title = value;
-            OnPropertyChanged();
-            RefreshCommandStates();
-        }
+        set { if (_title == value) return; _title = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public string DurationText
     {
         get => _durationText;
-        set
-        {
-            if (_durationText == value) return;
-            _durationText = value;
-            OnPropertyChanged();
-            RefreshCommandStates();
-        }
+        set { if (_durationText == value) return; _durationText = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public DateOnly PremiereDate
     {
         get => _premiereDate;
-        set
-        {
-            _premiereDate = value;
-            OnPropertyChanged();
-            RefreshCommandStates();
-        }
+        set { _premiereDate = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public ObservableCollection<GenreOptionViewModel> GenreOptions { get; } = new();
 
+    public ICommand AddCommand { get; }
     public ICommand SaveCommand { get; }
     public ICommand ResetCommand { get; }
     public ICommand CancelCommand { get; }
+    public ICommand DeleteCommand { get; }
 
     public bool IsSaving
     {
         get => _isSaving;
-        private set
-        {
-            if (_isSaving == value) return;
-            _isSaving = value;
-            OnPropertyChanged();
-            RefreshCommandStates();
-        }
+        private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public string? Error
     {
         get => _error;
+        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
+    }
+
+    public bool IsEditMode
+    {
+        get => _isEditMode;
         private set
         {
-            if (_error == value) return;
-            _error = value;
+            if (_isEditMode == value) return;
+            _isEditMode = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsAddMode));
+            RefreshCommandStates();
         }
     }
 
+    public bool IsAddMode => !IsEditMode;
+
     public event EventHandler<Movie>? MovieSaved;
 
-    public MovieViewModel()
+    public MovieViewModel(IMovieRepository? repo = null)
     {
-        _repository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
+        if (repo is null)
+            _repository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
+        else
+            _repository = repo;
         LoadGenreOptions();
 
+        AddCommand = new RelayCommand(Add, CanAdd);
         SaveCommand = new RelayCommand(Save, CanSave);
         ResetCommand = new RelayCommand(Reset, CanReset);
         CancelCommand = new RelayCommand(Cancel);
+        DeleteCommand = new RelayCommand(Delete, CanDelete);
+
+        // initial mode = add
+        IsEditMode = false;
+    }
+
+    // Populate form from repository by id (enter edit mode)
+    public async Task LoadAsync(Guid id)
+    {
+        try
+        {
+            Error = null;
+            var movie = await _repository.GetByIdAsync(id).ConfigureAwait(true);
+            if (movie is null)
+            {
+                Error = "Movie not found.";
+                return;
+            }
+
+            _currentId = movie.Id;
+            Title = movie.Title;
+            DurationText = movie.Duration.ToString();
+            PremiereDate = movie.PremiereDate;
+            foreach (var opt in GenreOptions)
+                opt.IsSelected = movie.Genres.HasFlag(opt.Value);
+
+            IsEditMode = true;
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
     }
 
     private void LoadGenreOptions()
@@ -111,28 +138,26 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             opt.PropertyChanged += (_, _) =>
             {
                 RefreshCommandStates();
-                // Force re-evaluation of ComboBox.Text binding (uses converter on GenreOptions)
-                OnPropertyChanged(nameof(GenreOptions));
+                OnPropertyChanged(nameof(GenreOptions)); // update ComboBox.Text via converter
             };
         }
     }
 
-    private bool CanSave() =>
+    private bool CanSubmit() =>
         !IsSaving
         && !string.IsNullOrWhiteSpace(Title)
         && PremiereDate >= DateOnly.FromDateTime(DateTime.Now)
         && TryParseDuration(out _)
         && GetSelectedGenres() != Genre.None;
 
-    private bool CanReset() =>
-        !string.IsNullOrEmpty(Title)
-        || !string.IsNullOrEmpty(DurationText)
-        || PremiereDate != DateOnly.FromDateTime(DateTime.Now)
-        || GenreOptions.Any(o => o.IsSelected);
+    private bool CanAdd() => IsAddMode && CanSubmit();
+    private bool CanSave() => IsEditMode && CanSubmit();
 
-    private void Save()
+    private bool CanDelete() => true;
+    private bool CanReset() => IsEditMode || !string.IsNullOrWhiteSpace(Title) || !string.IsNullOrWhiteSpace(DurationText);
+
+    private void Add()
     {
-        Error = null;
         if (!TryParseDuration(out var duration))
         {
             Error = "Duration must be a positive whole number.";
@@ -146,6 +171,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             return;
         }
 
+        Error = null;
         IsSaving = true;
         try
         {
@@ -157,14 +183,95 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             _repository.AddAsync(movie).GetAwaiter().GetResult();
 
             MovieSaved?.Invoke(this, movie);
+            MessageBox.Show("Movie added.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            MessageBox.Show("Movie saved.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset();
+            Reset(); // back to add mode with empty form
         }
         catch (Exception ex)
         {
             Error = ex.Message;
-            MessageBox.Show($"Failed to save movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Failed to add movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void Save()
+    {
+        if (_currentId is null)
+        {
+            Error = "Nothing to update. Please select a movie.";
+            return;
+        }
+
+        if (!TryParseDuration(out var duration))
+        {
+            Error = "Duration must be a positive whole number.";
+            return;
+        }
+
+        var selectedGenres = GetSelectedGenres();
+        if (selectedGenres == Genre.None)
+        {
+            Error = "Select at least one genre.";
+            return;
+        }
+
+        Error = null;
+        IsSaving = true;
+        try
+        {
+            var movie = _repository.GetByIdAsync(_currentId.Value).GetAwaiter().GetResult();
+            if (movie is null)
+            {
+                Error = "Movie not found.";
+                return;
+            }
+
+            movie.Title = Title.Trim();
+            movie.Duration = duration;
+            movie.PremiereDate = PremiereDate;
+            movie.Genres = selectedGenres;
+
+            _repository.UpdateAsync(movie).GetAwaiter().GetResult();
+
+            MovieSaved?.Invoke(this, movie); // reuse to trigger list refresh
+            MessageBox.Show("Movie updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            MessageBox.Show($"Failed to update movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void Delete()
+    {
+        if (_currentId is null)
+        {
+            Error = "Nothing to delete. Please select a movie.";
+            return;
+        }
+        if (MessageBox.Show("Are you sure you want to delete this movie?", "Confirm Delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+        IsSaving = true;
+        try
+        {
+            _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
+            MessageBox.Show("Movie deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            Reset(); // back to add mode with empty form
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            MessageBox.Show($"Failed to delete movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -174,12 +281,15 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private void Reset()
     {
+        _currentId = null;
         Title = string.Empty;
         DurationText = string.Empty;
         PremiereDate = DateOnly.FromDateTime(DateTime.Now);
         foreach (var g in GenreOptions)
             g.IsSelected = false;
         Error = null;
+
+        IsEditMode = false; // back to add mode
     }
 
     private void Cancel()
@@ -192,10 +302,8 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private bool TryParseDuration(out int value)
     {
-        if (int.TryParse(DurationText, out value))
-        {
-            if (value > 0) return true;
-        }
+        if (int.TryParse(DurationText, out value) && value > 0)
+            return true;
         value = 0;
         return false;
     }
@@ -210,6 +318,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private void RefreshCommandStates()
     {
+        (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
         (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
         (ResetCommand as RelayCommand)?.RaiseCanExecuteChanged();
     }

@@ -7,14 +7,14 @@ using TheMovie.UI.Commands;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class MoviesListViewModel : INotifyPropertyChanged
+public sealed class CinemasListViewModel : INotifyPropertyChanged
 {
-    private readonly IMovieRepository _repository;
+    private readonly ICinemaRepository _repository;
     private bool _isLoading;
     private string? _error;
-    private MovieListItemViewModel? _selectedMovie;
+    private CinemaListItemViewModel? _selectedCinema;
 
-    public ObservableCollection<MovieListItemViewModel> Movies { get; } = new();
+    public ObservableCollection<CinemaListItemViewModel> Cinemas { get; } = new();
     public ICommand RefreshCommand { get; }
 
     public bool IsLoading
@@ -26,25 +26,27 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     public string? Error
     {
         get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
+        private set { if (_error == value) return; _error = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
     }
 
-    public MovieListItemViewModel? SelectedMovie
+    public bool HasError => !string.IsNullOrEmpty(Error);
+
+    public CinemaListItemViewModel? SelectedCinema
     {
-        get => _selectedMovie;
+        get => _selectedCinema;
         set
         {
-            if (_selectedMovie == value) return;
-            _selectedMovie = value;
+            if (_selectedCinema == value) return;
+            _selectedCinema = value;
             OnPropertyChanged();
         }
     }
 
-    public MoviesListViewModel(IMovieRepository repository)
+    public CinemasListViewModel(ICinemaRepository repository)
     {
         _repository = repository;
         RefreshCommand = new RelayCommand(async () => await RefreshAsync(), () => !IsLoading);
-        _ = RefreshAsync(); // initial load
+        _ = RefreshAsync();
     }
 
     public async Task RefreshAsync()
@@ -53,10 +55,10 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
         IsLoading = true;
         try
         {
-            var movies = await _repository.GetAllAsync().ConfigureAwait(true);
-            Movies.Clear();
-            foreach (var m in movies.OrderBy(m => m.Title))
-                Movies.Add(new MovieListItemViewModel(m));
+            var cinemas = await _repository.GetAllAsync().ConfigureAwait(true);
+            Cinemas.Clear();
+            foreach (var c in cinemas.OrderBy(c => c.Name))
+                Cinemas.Add(new CinemaListItemViewModel(c));
         }
         catch (Exception ex)
         {

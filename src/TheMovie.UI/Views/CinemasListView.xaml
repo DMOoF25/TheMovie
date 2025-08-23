@@ -1,16 +1,9 @@
-﻿<UserControl x:Class="TheMovie.UI.Views.MoviesListView"
+﻿<UserControl x:Class="TheMovie.UI.Views.CinemasListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:conv="clr-namespace:TheMovie.UI.Converters"
-             xmlns:pf="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
              mc:Ignorable="d">
-    <UserControl.Resources>
-        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-        <pf:BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -18,7 +11,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Film (liste)" FontSize="18" FontWeight="Bold" Margin="0 0 0 6"/>
+        <TextBlock Text="Biografer (liste)" FontSize="18" FontWeight="Bold" Margin="0 0 0 6"/>
 
         <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="4" Padding="4">
             <Grid>
@@ -27,15 +20,12 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Bind to Movies collection on MoviesListViewModel -->
-                <ListView ItemsSource="{Binding Movies}"
-                          SelectedItem="{Binding SelectedMovie, Mode=TwoWay}">
+                <ListView ItemsSource="{Binding Cinemas}"
+                          SelectedItem="{Binding SelectedCinema, Mode=TwoWay}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Titel" Width="150" DisplayMemberBinding="{Binding Title}"/>
-                            <GridViewColumn Header="Varighed" Width="70" DisplayMemberBinding="{Binding Duration}"/>
-                            <GridViewColumn Header="Primiære" Width="100" DisplayMemberBinding="{Binding PremiereDate, StringFormat='{}{0:dd-MM-yyyy}'}"/>
-                            <GridViewColumn Header="Genrer" Width="160" DisplayMemberBinding="{Binding GenresDisplay}"/>
+                            <GridViewColumn Header="Navn" Width="200" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Lokation" Width="260" DisplayMemberBinding="{Binding Location}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -44,8 +34,7 @@
                            Text="{Binding Error}"
                            Foreground="Red"
                            Margin="4"
-                           Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"/>
-
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
                     <Button Content="Opdater" Width="80" Command="{Binding RefreshCommand}" />
                     <TextBlock Text="Henter..." Margin="8 0 0 0" Foreground="#555"

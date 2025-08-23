@@ -81,8 +81,17 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Gem" Width="80" Command="{Binding SaveCommand}" IsDefault="True" Margin="0 0 6 0"/>
-            <Button Content="Nulstil" Width="80" Command="{Binding ResetCommand}" Margin="0 0 6 0"/>
+            <!-- Add in add mode -->
+            <Button Content="Tilføj" Width="80" Command="{Binding AddCommand}" IsDefault="True" Margin="0 0 6 0"
+                    Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
+            <!-- Save in edit mode -->
+            <Button Content="Gem" Width="80" Command="{Binding SaveCommand}" IsDefault="True" Margin="0 0 6 0"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
+
+            <Button Content="Nulstil" Width="80" Command="{Binding ResetCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Slet" Width="80" Command="{Binding DeleteCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
 
