@@ -9,6 +9,10 @@ public static class DependencyInjection
     public static IServiceCollection AddMovieInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<IMovieRepository, MovieRepository>();
+        services.AddSingleton<ICinemaRepository, CinemaRepository>();
+        services.AddSingleton<IInstructorRepository, InstructorRepository>();
+        services.AddSingleton<IHallRepository, HallRepository>();
+        services.AddSingleton<IScreeningRepository, ScreeningRepository>();
         return services;
     }
 }
