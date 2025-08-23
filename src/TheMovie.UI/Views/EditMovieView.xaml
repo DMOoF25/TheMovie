@@ -27,6 +27,16 @@
                              MaxHeight="20"
                              MinWidth="250" Margin="0 0 20 0"/>
 
+                    <TextBlock Text="Instruktør:" Margin="0 0 20 0"/>
+                    <ComboBox
+                        ItemsSource="{Binding Instructors}"
+                        DisplayMemberPath="Name"
+                        SelectedValuePath="Id"
+                        SelectedValue="{Binding SelectedInstructorId, Mode=TwoWay}"
+                        Width="250"
+                        HorizontalAlignment="Left"
+                        Margin="0 0 20 0"/>
+
                     <TextBlock Text="Varighed (min):" Margin="0 0 20 0"/>
                     <TextBox VerticalAlignment="Top"
                              Text="{Binding DurationText, UpdateSourceTrigger=PropertyChanged}"
@@ -81,10 +91,8 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <!-- Add in add mode -->
             <Button Content="Tilføj" Width="80" Command="{Binding AddCommand}" IsDefault="True" Margin="0 0 6 0"
                     Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
-            <!-- Save in edit mode -->
             <Button Content="Gem" Width="80" Command="{Binding SaveCommand}" IsDefault="True" Margin="0 0 6 0"
                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
 
@@ -95,7 +103,6 @@
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
 
-        <!-- Movies list user control -->
         <views:MoviesListView x:Name="MoviesListControl"/>
     </StackPanel>
 </Page>

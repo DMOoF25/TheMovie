@@ -10,6 +10,8 @@ namespace TheMovie.Infrastructure.Persistents;
 /// </summary>
 public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
 {
+    private int _numberOfColumns = 6; // Id, InstructorId, Title, Duration, PremiereDate, Genres
+
     public MovieRepository() : base()
     {
     }
@@ -32,16 +34,18 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                 while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    int partIndex = 0;
                     var parts = line.Split(',');
-                    if (parts.Length < 4) continue;
-                    if (!Guid.TryParse(parts[0], out var id)) continue;
-                    if (string.IsNullOrWhiteSpace(parts[1])) continue;
-                    if (!int.TryParse(parts[2], out var duration)) continue;
-                    if (!DateOnly.TryParse(parts[3], out var premiereDate)) continue;
-                    if (!TryParseGenres(parts[4], out var genres)) continue;
+                    if (parts.Length < _numberOfColumns) continue;
+                    if (!Guid.TryParse(parts[partIndex], out var id)) continue;
+                    if (!Guid.TryParse(parts[++partIndex], out var instructorId)) continue;
+                    if (string.IsNullOrWhiteSpace(parts[++partIndex])) continue;
+                    string title = parts[partIndex];
+                    if (!int.TryParse(parts[++partIndex], out var duration)) continue;
+                    if (!DateOnly.TryParse(parts[++partIndex], out var premiereDate)) continue;
+                    if (!TryParseGenres(parts[++partIndex], out var genres)) continue;
 
-
-                    var movie = new Movie { Id = id, Title = parts[1], Duration = duration, PremiereDate = premiereDate, Genres = genres };
+                    var movie = new Movie { Id = id, InstructorId = instructorId, Title = title, Duration = duration, PremiereDate = premiereDate, Genres = genres };
                     UpsertInMemory(movie);
                     loaded++;
                 }
@@ -72,7 +76,7 @@ public sealed class MovieRepository : RepositoryBase<Movie>, IMovieRepository
                     foreach (var movie in Items)
                     {
                         var genresSerialized = SerializeGenres(movie.Genres); // now ';' separated
-                        var line = $"{movie.Id},{Escape(movie.Title)},{movie.Duration},{movie.PremiereDate},{genresSerialized}";
+                        var line = $"{movie.Id},{movie.InstructorId},{Escape(movie.Title)},{movie.Duration},{movie.PremiereDate},{genresSerialized}";
                         await writer.WriteLineAsync(line).ConfigureAwait(false);
                     }
                 }
