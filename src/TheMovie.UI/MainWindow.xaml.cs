@@ -26,6 +26,12 @@ public partial class MainWindow : Window
     {
         MainFrame.Navigate(new EditCinemaView());
     }
+
+    private void MenuItemEditInstructor_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new EditInstructorView());
+    }
+
     private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
     {
         MessageBox.Show("The Movie App" +

@@ -40,6 +40,11 @@ public partial class App : System.Windows.Application
                 services.AddTransient<CinemaViewModel>();
                 services.AddTransient<EditCinemaView>();
 
+                // Instructors
+                services.AddTransient<InstructorsListViewModel>();
+                services.AddTransient<InstructorViewModel>();
+                services.AddTransient<EditInstructorView>();
+
                 services.AddSingleton<MainWindow>();
             })
             .Build();
