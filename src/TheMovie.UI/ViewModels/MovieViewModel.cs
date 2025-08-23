@@ -15,6 +15,7 @@ namespace TheMovie.UI.ViewModels;
 public sealed class MovieViewModel : INotifyPropertyChanged
 {
     private readonly IMovieRepository _repository;
+    private readonly IInstructorRepository _instructorRepository;
 
     private Guid? _currentId;
     private string _title = string.Empty;
@@ -23,6 +24,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     private bool _isSaving;
     private string? _error;
     private bool _isEditMode;
+    private Guid? _selectedInstructorId;
 
     public string Title
     {
@@ -43,6 +45,16 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     }
 
     public ObservableCollection<GenreOptionViewModel> GenreOptions { get; } = new();
+
+    // Instructors for select box
+    public ObservableCollection<InstructorListItemViewModel> Instructors { get; } = new();
+
+    // Selected instructor id (nullable -> none)
+    public Guid? SelectedInstructorId
+    {
+        get => _selectedInstructorId;
+        set { if (_selectedInstructorId == value) return; _selectedInstructorId = value; OnPropertyChanged(); }
+    }
 
     public ICommand AddCommand { get; }
     public ICommand SaveCommand { get; }
@@ -81,11 +93,11 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     public MovieViewModel(IMovieRepository? repo = null)
     {
-        if (repo is null)
-            _repository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
-        else
-            _repository = repo;
+        _repository = repo ?? App.HostInstance.Services.GetRequiredService<IMovieRepository>();
+        _instructorRepository = App.HostInstance.Services.GetRequiredService<IInstructorRepository>();
+
         LoadGenreOptions();
+        _ = LoadInstructorOptionsAsync();
 
         AddCommand = new RelayCommand(Add, CanAdd);
         SaveCommand = new RelayCommand(Save, CanSave);
@@ -93,7 +105,6 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         CancelCommand = new RelayCommand(Cancel);
         DeleteCommand = new RelayCommand(Delete, CanDelete);
 
-        // initial mode = add
         IsEditMode = false;
     }
 
@@ -116,6 +127,8 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             PremiereDate = movie.PremiereDate;
             foreach (var opt in GenreOptions)
                 opt.IsSelected = movie.Genres.HasFlag(opt.Value);
+
+            SelectedInstructorId = movie.InstructorId != Guid.Empty ? movie.InstructorId : null;
 
             IsEditMode = true;
         }
@@ -143,14 +156,28 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
+    private async Task LoadInstructorOptionsAsync()
+    {
+        try
+        {
+            var all = await _instructorRepository.GetAllAsync().ConfigureAwait(true);
+            Instructors.Clear();
+            foreach (var i in all.OrderBy(i => i.Name))
+                Instructors.Add(new InstructorListItemViewModel(i));
+        }
+        catch
+        {
+            // Best-effort; keep UI responsive even if loading fails
+        }
+    }
+
     private bool CanSubmit() =>
         !IsSaving
         && !string.IsNullOrWhiteSpace(Title)
-        && PremiereDate >= DateOnly.FromDateTime(DateTime.Now)
         && TryParseDuration(out _)
         && GetSelectedGenres() != Genre.None;
 
-    private bool CanAdd() => IsAddMode && CanSubmit();
+    private bool CanAdd() => IsAddMode && CanSubmit() && PremiereDate >= DateOnly.FromDateTime(DateTime.Now);
     private bool CanSave() => IsEditMode && CanSubmit();
 
     private bool CanDelete() => true;
@@ -175,7 +202,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         IsSaving = true;
         try
         {
-            var movie = new Movie(Title.Trim(), duration, PremiereDate)
+            var movie = new Movie(Title.Trim(), duration, PremiereDate, SelectedInstructorId ?? Guid.Empty)
             {
                 Genres = selectedGenres
             };
@@ -234,6 +261,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             movie.Duration = duration;
             movie.PremiereDate = PremiereDate;
             movie.Genres = selectedGenres;
+            movie.InstructorId = SelectedInstructorId ?? Guid.Empty;
 
             _repository.UpdateAsync(movie).GetAwaiter().GetResult();
 
@@ -287,6 +315,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         PremiereDate = DateOnly.FromDateTime(DateTime.Now);
         foreach (var g in GenreOptions)
             g.IsSelected = false;
+        SelectedInstructorId = null;
         Error = null;
 
         IsEditMode = false; // back to add mode
