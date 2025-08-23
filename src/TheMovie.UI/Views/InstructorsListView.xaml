@@ -18,7 +18,11 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ListView ItemsSource="{Binding Instructors}"
-                          SelectedItem="{Binding SelectedInstructor, Mode=TwoWay}">
+                          SelectedItem="{Binding SelectedInstructor, Mode=TwoWay}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.CanContentScroll="True"
+                          MaxHeight="220">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Navn" Width="250" DisplayMemberBinding="{Binding Name}"/>
