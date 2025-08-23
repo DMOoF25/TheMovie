@@ -12,6 +12,7 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     private readonly IMovieRepository _repository;
     private bool _isLoading;
     private string? _error;
+    private MovieListItemViewModel? _selectedMovie;
 
     public ObservableCollection<MovieListItemViewModel> Movies { get; } = new();
     public ICommand RefreshCommand { get; }
@@ -26,6 +27,17 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
     {
         get => _error;
         private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
+    }
+
+    public MovieListItemViewModel? SelectedMovie
+    {
+        get => _selectedMovie;
+        set
+        {
+            if (_selectedMovie == value) return;
+            _selectedMovie = value;
+            OnPropertyChanged();
+        }
     }
 
     public MoviesListViewModel(IMovieRepository repository)

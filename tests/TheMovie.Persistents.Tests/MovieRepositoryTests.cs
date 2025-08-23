@@ -11,13 +11,15 @@ public class MovieRepositoryTests
 {
     private string _tempDir = null!;
     private MovieRepository _repo = null!;
+    private const string _fileName = "movies.csv";
+
 
     private MovieRepository CreateRepositoryWithPath(string folder)
     {
         var repo = (MovieRepository)Activator.CreateInstance(typeof(MovieRepository), nonPublic: true)!;
         typeof(MovieRepository)
             .GetField("_filePath", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.FlattenHierarchy)!
-            .SetValue(repo, Path.Combine(folder, "movies.csv"));
+            .SetValue(repo, Path.Combine(folder, _fileName));
         Directory.CreateDirectory(folder);
         return repo;
     }
@@ -123,7 +125,7 @@ public class MovieRepositoryTests
 
         // New repository instance
         var repo2 = CreateRepositoryWithPath(_tempDir);
-        //await repo2.InitializeAsync();
+        await repo2.InitializeAsync();
 
         var all = (await repo2.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);

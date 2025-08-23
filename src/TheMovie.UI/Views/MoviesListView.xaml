@@ -28,7 +28,8 @@
                 </Grid.RowDefinitions>
 
                 <!-- Bind to Movies collection on MoviesListViewModel -->
-                <ListView ItemsSource="{Binding Movies}">
+                <ListView ItemsSource="{Binding Movies}"
+                          SelectedItem="{Binding SelectedMovie, Mode=TwoWay}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Titel" Width="150" DisplayMemberBinding="{Binding Title}"/>
