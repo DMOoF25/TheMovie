@@ -9,12 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TheMovie.Infrastructure\TheMovie.Infrastructure.csproj" />
+    <Compile Remove="Views\Components\**" />
+    <Compile Remove="Views\Themes\**" />
+    <EmbeddedResource Remove="Views\Components\**" />
+    <EmbeddedResource Remove="Views\Themes\**" />
+    <None Remove="Views\Components\**" />
+    <None Remove="Views\Themes\**" />
+    <Page Remove="Views\Components\**" />
+    <Page Remove="Views\Themes\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Components\" />
-    <Folder Include="Views\Themes\Styles\" />
+    <ProjectReference Include="..\TheMovie.Infrastructure\TheMovie.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
