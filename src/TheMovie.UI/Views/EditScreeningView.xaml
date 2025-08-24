@@ -12,57 +12,69 @@
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </Page.Resources>
 
-    <StackPanel Orientation="Vertical" Margin="0 0 8 0">
-        <TextBlock Text="Tilføj / Rediger FORESTILLINGER" FontSize="24" FontWeight="Bold" Margin="0 0 0 10"/>
-        
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
-                    <TextBlock Text="Biograf:" Margin="0 0 20 0"/>
-                    <ComboBox
-                        ItemsSource="{Binding Cinemas}"
-                        DisplayMemberPath="Name"
-                        SelectedValuePath="Id"
-                        SelectedValue="{Binding SelectedCinemaId, Mode=TwoWay}"
-                        Width="250"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 20 0"/>
-                    <TextBlock Text="Sal:" Margin="0 0 20 0"/>
-                    <ComboBox
-                        ItemsSource="{Binding Halls}"
-                        DisplayMemberPath="Name"
-                        SelectedValuePath="Id"
-                        SelectedValue="{Binding SelectedHallId, Mode=TwoWay}"
-                        Width="250"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 20 0"/>
-                    <TextBlock Text="Film:" Margin="0 0 6 0"/>
-                    <ComboBox
-                        ItemsSource="{Binding Movies}"
-                        DisplayMemberPath="Title"
-                        SelectedValuePath="Id"
-                        SelectedValue="{Binding SelectedMovieId, Mode=TwoWay}"
-                        Width="250"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 20 0"/>
-                </StackPanel>
-                
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
-                    <TextBlock Text="Dato og tid:" Margin="0 0 20 0"/>
-                    <DatePicker
-                        SelectedDate="{Binding ScreeningDate, Mode=TwoWay}"
-                        Margin="0 0 20 0"
-                        Width="250"
-                        HorizontalAlignment="Left"/>
-                    <TextBox VerticalAlignment="Top"
-                             Text="{Binding ScreeningTimeText, UpdateSourceTrigger=PropertyChanged}"
-                             PreviewTextInput="ScreeningTime_PreviewTextInput"
-                             MinWidth="60"
-                             MaxHeight="20"
-                             Margin="0 0 20 0"/>
-                </StackPanel>
+    <StackPanel Orientation="Vertical" Margin="0 0 8 0" >
+        <TextBlock Text="Tilføj / Rediger Forestillinger" 
+                   FontSize="24" FontWeight="Bold" Margin="0 0 0 10"/>
+
+        <!-- Form -->
+        <StackPanel Orientation="Vertical" Margin="0 0 0 8" >
+
+            <!-- Row: Cinema and Hall -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
+                <TextBlock Text="Biograf:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding Cinemas}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding SelectedCinemaId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          MinWidth="220" Margin="0,0,12,0"/>
+
+                <TextBlock Text="Sal:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding Halls}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding SelectedHallId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          MinWidth="220"/>
+            </StackPanel>
+
+            <!-- Row: Movie -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
+                <TextBlock Text="Film:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding Movies}"
+                          DisplayMemberPath="Title"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding SelectedMovieId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          MinWidth="300"/>
+            </StackPanel>
+
+            <!-- Row: Date and Start Time -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 6">
+                <TextBlock Text="Dato:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <DatePicker SelectedDate="{Binding SelectedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Width="160" Margin="0,0,12,0"/>
+                <TextBlock Text="Start (HH:mm):" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox Text="{Binding StartTimeString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Width="80"
+                         PreviewTextInput="ScreeningTime_PreviewTextInput"/>
+            </StackPanel>
+
+            <!-- Error -->
+            <TextBlock Text="{Binding Error}" Foreground="Red" TextWrapping="Wrap"
+                       Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"
+                       Margin="0 0 0 6"/>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Tilføj" Width="80" Command="{Binding AddCommand}" Margin="0 0 6 0"
+                        Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Gem" Width="80" Command="{Binding SaveCommand}" Margin="0 0 6 0"
+                        Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Slet" Width="80" Command="{Binding DeleteCommand}" Margin="0 0 6 0"
+                        Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
             </StackPanel>
         </StackPanel>
+
+        <!-- List -->
         <views:ScreeningsListView x:Name="ScreeningsListControl"/>
     </StackPanel>
 </Page>

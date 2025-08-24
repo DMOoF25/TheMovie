@@ -1,12 +1,69 @@
 ﻿<UserControl x:Class="TheMovie.UI.Views.ScreeningsListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TheMovie.UI.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="clr-namespace:TheMovie.UI.Converters"
+             xmlns:pf="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <pf:BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Fremvisning (liste)" FontSize="18" FontWeight="Bold" Margin="0 0 0 6"/>
+
+        <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="4" Padding="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ListView ItemsSource="{Binding Screenings}"
+                          SelectedItem="{Binding SelectedScreening, Mode=TwoWay}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.CanContentScroll="True"
+                          MaxHeight="220">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding CinemaNameDisplay}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding HallNameDisplay}" FontStyle="Italic"/>
+                                <TextBlock Text="{Binding MovieTitleDisplay}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding DateDisplay}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Start: "/>
+                                    <TextBlock Text="{Binding StartTimeDisplay}"/>
+                                    <TextBlock Text="  Slut: " Margin="8,0,0,0"/>
+                                    <TextBlock Text="{Binding EndTimeDisplay}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <TextBlock Grid.Row="0"
+                           Text="{Binding Error}"
+                           Foreground="Red"
+                           Margin="4"
+                           IsHitTestVisible="False"
+                           Panel.ZIndex="1"
+                           Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
+                    <Button Content="Opdater" Width="80" Command="{Binding RefreshCommand}" />
+                    <TextBlock Text="Henter..." Margin="8 0 0 0" Foreground="#555"
+                               Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
