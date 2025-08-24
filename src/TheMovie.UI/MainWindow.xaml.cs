@@ -26,19 +26,30 @@ public partial class MainWindow : Window
     {
         MainFrame.Navigate(new EditCinemaView());
     }
+    private void MenuItemEditHall_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new EditHallView());
+    }
 
     private void MenuItemEditInstructor_Click(object sender, RoutedEventArgs e)
     {
         MainFrame.Navigate(new EditInstructorView());
     }
 
+    private void MenuItemEditSchedule_Click(object sender, RoutedEventArgs e)
+    {
+        MainFrame.Navigate(new EditScreeningView());
+    }
+
     private void MenuItemAbout_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("The Movie App" +
-                        "\n\nA simple WPF application to manage movies." +
+        MessageBox.Show("Biograf app" +
+                        "\n\nRegistrering af film." +
+                        "\nPlanlægning af filmvisninger." +
+                        "\nBooking af billetter." +
                         "\n\nDeveloped by Team 4" +
                         "\n\n",
-                        "Om The Movie App",
+                        "Om Biograf app",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
     }

@@ -45,6 +45,16 @@ public partial class App : System.Windows.Application
                 services.AddTransient<InstructorViewModel>();
                 services.AddTransient<EditInstructorView>();
 
+                // Halls
+                services.AddTransient<HallsListViewModel>();
+                services.AddTransient<HallViewModel>();
+                services.AddTransient<EditHallView>();
+
+                // Screenings
+                services.AddTransient<ScreeningsListViewModel>();
+                services.AddTransient<ScreeningViewModel>();
+                services.AddTransient<EditScreeningView>();
+
                 services.AddSingleton<MainWindow>();
             })
             .Build();
