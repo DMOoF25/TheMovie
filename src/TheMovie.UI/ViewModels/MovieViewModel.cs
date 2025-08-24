@@ -187,14 +187,14 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     {
         if (!TryParseDuration(out var duration))
         {
-            Error = "Duration must be a positive whole number.";
+            Error = "Filmens varighed skal være et positv tal.";
             return;
         }
 
         var selectedGenres = GetSelectedGenres();
         if (selectedGenres == Genre.None)
         {
-            Error = "Select at least one genre.";
+            Error = "Vælg mindst en genre.";
             return;
         }
 
@@ -210,14 +210,14 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             _repository.AddAsync(movie).GetAwaiter().GetResult();
 
             MovieSaved?.Invoke(this, movie);
-            MessageBox.Show("Movie added.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Film tilføjet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Reset(); // back to add mode with empty form
         }
         catch (Exception ex)
         {
             Error = ex.Message;
-            MessageBox.Show($"Failed to add movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Fejlet at gemme film.\n{ex.Message}", "Fejl", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -283,23 +283,23 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     {
         if (_currentId is null)
         {
-            Error = "Nothing to delete. Please select a movie.";
+            Error = "Intet at slette!";
             return;
         }
-        if (MessageBox.Show("Are you sure you want to delete this movie?", "Confirm Delete",
+        if (MessageBox.Show("Vil du slette denne film?", "Bekræft slet",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
         IsSaving = true;
         try
         {
             _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
-            MessageBox.Show("Movie deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Film slettet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Reset(); // back to add mode with empty form
         }
         catch (Exception ex)
         {
             Error = ex.Message;
-            MessageBox.Show($"Failed to delete movie.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Fejlet at slette film.\n{ex.Message}", "Fejl", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
