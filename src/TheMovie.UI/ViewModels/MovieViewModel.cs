@@ -18,43 +18,37 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     private readonly IInstructorRepository _instructorRepository;
 
     private Guid? _currentId;
-    private string _title = string.Empty;
-    private string _durationText = string.Empty;
-    private DateOnly _premiereDate = DateOnly.FromDateTime(DateTime.Now);
-    private bool _isSaving;
-    private string? _error;
-    private bool _isEditMode;
-    private Guid? _selectedInstructorId;
 
+    private string _title = string.Empty;
     public string Title
     {
         get => _title;
         set { if (_title == value) return; _title = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
+    private string _durationText = string.Empty;
     public string DurationText
     {
         get => _durationText;
         set { if (_durationText == value) return; _durationText = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
+    private DateOnly _premiereDate = DateOnly.FromDateTime(DateTime.Now);
     public DateOnly PremiereDate
     {
         get => _premiereDate;
         set { _premiereDate = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
-    public ObservableCollection<GenreOptionViewModel> GenreOptions { get; } = new();
-
-    // Instructors for select box
-    public ObservableCollection<InstructorListItemViewModel> Instructors { get; } = new();
-
-    // Selected instructor id (nullable -> none)
+    private Guid? _selectedInstructorId;
     public Guid? SelectedInstructorId
     {
         get => _selectedInstructorId;
         set { if (_selectedInstructorId == value) return; _selectedInstructorId = value; OnPropertyChanged(); }
     }
+
+    public ObservableCollection<GenreOptionViewModel> GenreOptions { get; } = new();
+    public ObservableCollection<InstructorListItemViewModel> Instructors { get; } = new();
 
     public ICommand AddCommand { get; }
     public ICommand SaveCommand { get; }
@@ -62,18 +56,19 @@ public sealed class MovieViewModel : INotifyPropertyChanged
     public ICommand CancelCommand { get; }
     public ICommand DeleteCommand { get; }
 
+    private bool _isSaving;
     public bool IsSaving
     {
         get => _isSaving;
         private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
-
+    private string? _error;
     public string? Error
     {
         get => _error;
         private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
     }
-
+    private bool _isEditMode;
     public bool IsEditMode
     {
         get => _isEditMode;
@@ -86,28 +81,28 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             RefreshCommandStates();
         }
     }
-
     public bool IsAddMode => !IsEditMode;
 
     public event EventHandler<Movie>? MovieSaved;
 
-    public MovieViewModel(IMovieRepository? repo = null)
+    public MovieViewModel(IMovieRepository? repository = null)
     {
-        _repository = repo ?? App.HostInstance.Services.GetRequiredService<IMovieRepository>();
+        _repository = repository ?? App.HostInstance.Services.GetRequiredService<IMovieRepository>();
         _instructorRepository = App.HostInstance.Services.GetRequiredService<IInstructorRepository>();
 
         LoadGenreOptions();
         _ = LoadInstructorOptionsAsync();
 
-        AddCommand = new RelayCommand(Add, CanAdd);
-        SaveCommand = new RelayCommand(Save, CanSave);
-        ResetCommand = new RelayCommand(Reset, CanReset);
-        CancelCommand = new RelayCommand(Cancel);
-        DeleteCommand = new RelayCommand(Delete, CanDelete);
+        AddCommand = new RelayCommand(OnAdd, CanAdd);
+        SaveCommand = new RelayCommand(OnSave, CanSave);
+        ResetCommand = new RelayCommand(OnReset, CanReset);
+        CancelCommand = new RelayCommand(OnCancel);
+        DeleteCommand = new RelayCommand(OnDelete, CanDelete);
 
         IsEditMode = false;
     }
 
+    #region Load method
     // Populate form from repository by id (enter edit mode)
     public async Task LoadAsync(Guid id)
     {
@@ -171,6 +166,9 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
+    #endregion
+
+    #region CanXXX methods
     private bool CanSubmit() =>
         !IsSaving
         && !string.IsNullOrWhiteSpace(Title)
@@ -182,8 +180,10 @@ public sealed class MovieViewModel : INotifyPropertyChanged
 
     private bool CanDelete() => true;
     private bool CanReset() => IsEditMode || !string.IsNullOrWhiteSpace(Title) || !string.IsNullOrWhiteSpace(DurationText);
+    #endregion
 
-    private void Add()
+    #region Command Handlers
+    private void OnAdd()
     {
         if (!TryParseDuration(out var duration))
         {
@@ -212,7 +212,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
             MovieSaved?.Invoke(this, movie);
             MessageBox.Show("Film tilføjet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            Reset(); // back to add mode with empty form
+            OnReset(); // back to add mode with empty form
         }
         catch (Exception ex)
         {
@@ -225,7 +225,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Save()
+    private void OnSave()
     {
         if (_currentId is null)
         {
@@ -279,7 +279,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Delete()
+    private void OnDelete()
     {
         if (_currentId is null)
         {
@@ -294,7 +294,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         {
             _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
             MessageBox.Show("Film slettet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset(); // back to add mode with empty form
+            OnReset(); // back to add mode with empty form
         }
         catch (Exception ex)
         {
@@ -307,7 +307,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Reset()
+    private void OnReset()
     {
         _currentId = null;
         Title = string.Empty;
@@ -321,13 +321,14 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         IsEditMode = false; // back to add mode
     }
 
-    private void Cancel()
+    private void OnCancel()
     {
-        Reset();
+        OnReset();
 
         var mainFrame = (System.Windows.Application.Current.MainWindow as MainWindow)?.MainFrame;
         mainFrame?.Navigate(new MainPage());
     }
+    #endregion
 
     private bool TryParseDuration(out int value)
     {

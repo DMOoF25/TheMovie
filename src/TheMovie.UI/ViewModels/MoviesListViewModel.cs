@@ -10,25 +10,8 @@ namespace TheMovie.UI.ViewModels;
 public sealed class MoviesListViewModel : INotifyPropertyChanged
 {
     private readonly IMovieRepository _repository;
-    private bool _isLoading;
-    private string? _error;
+
     private MovieListItemViewModel? _selectedMovie;
-
-    public ObservableCollection<MovieListItemViewModel> Movies { get; } = new();
-    public ICommand RefreshCommand { get; }
-
-    public bool IsLoading
-    {
-        get => _isLoading;
-        private set { if (_isLoading == value) return; _isLoading = value; OnPropertyChanged(); }
-    }
-
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
-    }
-
     public MovieListItemViewModel? SelectedMovie
     {
         get => _selectedMovie;
@@ -39,6 +22,24 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    public ObservableCollection<MovieListItemViewModel> Movies { get; } = [];
+
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        private set { if (_isLoading == value) return; _isLoading = value; OnPropertyChanged(); }
+    }
+
+    private string? _error;
+    public string? Error
+    {
+        get => _error;
+        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
+    }
+
+    public ICommand RefreshCommand { get; }
 
     public MoviesListViewModel(IMovieRepository repository)
     {
