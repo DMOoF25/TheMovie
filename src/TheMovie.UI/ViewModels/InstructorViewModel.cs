@@ -76,7 +76,7 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
             var instructor = await _repository.GetByIdAsync(id).ConfigureAwait(true);
             if (instructor is null)
             {
-                Error = "Instructor not found.";
+                Error = "Filmintruktør ikke fundet.";
                 return;
             }
 
@@ -166,7 +166,7 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
     private void Delete()
     {
         if (_currentId is null) return;
-        if (MessageBox.Show("Are you sure you want to delete this instructor?", "Confirm Delete",
+        if (MessageBox.Show("Vil du slette filminstruktøren?", "Bekræft sletning",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
@@ -175,7 +175,7 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         {
             _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
             InstructorSaved?.Invoke(this, null);
-            MessageBox.Show("Instructor deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Filminstruktøren slettet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Reset();
         }
         catch (Exception ex)
