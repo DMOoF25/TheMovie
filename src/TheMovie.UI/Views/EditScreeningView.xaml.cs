@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.UI.ViewModels;
@@ -18,7 +19,37 @@ public partial class EditScreeningView : Page
         DataContext = _vm;
 
         _screeningsListVm = App.HostInstance.Services.GetRequiredService<ScreeningsListViewModel>();
+        ScreeningsListControl.DataContext = _screeningsListVm;
 
+        // Populate form when a screening is selected in the list
+        if (_screeningsListVm is not null)
+            _screeningsListVm.PropertyChanged += ListVm_PropertyChanged;
+
+        // Auto-refresh list after save/delete
+        if (_vm is not null)
+        {
+            _vm.ScreeningSaved += async (_, __) =>
+            {
+                if (_screeningsListVm is not null)
+                    await _screeningsListVm.RefreshAsync();
+            };
+        }
+
+        Loaded += async (_, __) =>
+        {
+            if (_screeningsListVm is not null)
+                await _screeningsListVm.RefreshAsync();
+        };
+    }
+
+    private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ScreeningsListViewModel.SelectedScreening)
+            && _screeningsListVm?.SelectedScreening is { } item
+            && _vm is not null)
+        {
+            await _vm.LoadAsync(item.Id);
+        }
     }
 
     // OnAdd this event handler for PreviewTextInput
