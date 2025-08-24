@@ -39,7 +39,7 @@
                             <GridViewColumn Header="Genrer" Width="160" DisplayMemberBinding="{Binding GenresDisplay}"/>
                         </GridView>
                     </ListView.View>
-                </ListView>
+
 
                 <TextBlock Grid.Row="0"
                            Text="{Binding Error}"
