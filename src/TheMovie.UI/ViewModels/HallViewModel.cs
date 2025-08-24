@@ -15,6 +15,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
     private readonly ICinemaRepository _cinemaRepository;
 
     private Guid? _currentId;
+
     private string _name = string.Empty;
     public string Name
     {
@@ -27,6 +28,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
             RefreshCommandStates();
         }
     }
+
     private Guid? _selectedCinemaId;
     public Guid? SelectedCinemaId
     {
@@ -40,7 +42,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<Cinema> Cinemas { get; private set; } = new ObservableCollection<Cinema>();
+    public ObservableCollection<CinemaListItemViewModel> Cinemas { get; private set; } = [];
 
     public ICommand AddCommand { get; }
     public ICommand SaveCommand { get; }
@@ -77,7 +79,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
 
     public event EventHandler<Hall>? HallSaved;
 
-    public HallViewModel(IHallRepository repository)
+    public HallViewModel(IHallRepository? repository = null)
     {
         _repository = repository ?? App.HostInstance.Services.GetRequiredService<IHallRepository>();
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
@@ -95,6 +97,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
 
 
     #region Load method
+    // Populate form from repository by id (enter edit mode)
     public async Task LoadAsync(Guid id)
     {
         try
@@ -127,7 +130,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
             var all = await _cinemaRepository.GetAllAsync().ConfigureAwait(true);
             Cinemas.Clear();
             foreach (var i in all.OrderBy(i => i.Name))
-                Cinemas.Add(i);
+                Cinemas.Add(new CinemaListItemViewModel(i));
         }
         catch (Exception ex)
         {
@@ -135,7 +138,6 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
     #endregion
-
 
     #region CanXXX methods
     private bool CanSubmitCore() =>
@@ -148,7 +150,6 @@ public sealed class HallViewModel : INotifyPropertyChanged
     private bool CanReset() => IsEditMode && !IsSaving;
     private bool CanDelete() => IsEditMode && !IsSaving;
     #endregion
-
 
     #region Command Handlers
     private void OnAdd()

@@ -23,7 +23,7 @@ public class HallsListViewModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<HallListItemViewModel> Halls { get; } = new();
+    public ObservableCollection<HallListItemViewModel> Halls { get; } = [];
 
     private bool _isLoading;
     public bool IsLoading
@@ -37,17 +37,6 @@ public class HallsListViewModel : INotifyPropertyChanged
     {
         get => _error;
         private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
-    }
-
-    public HallListItemViewModel? SelectedMovie
-    {
-        get => _selectedHall;
-        set
-        {
-            if (_selectedHall == value) return;
-            _selectedHall = value;
-            OnPropertyChanged();
-        }
     }
 
     public ICommand RefreshCommand { get; }
@@ -82,7 +71,6 @@ public class HallsListViewModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
     private void OnPropertyChanged([CallerMemberName] string? name = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

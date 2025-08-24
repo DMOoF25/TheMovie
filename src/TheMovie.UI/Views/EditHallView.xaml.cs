@@ -18,12 +18,14 @@ public partial class EditHallView : Page
     {
         InitializeComponent();
 
-        _vm = App.HostInstance.Services.GetRequiredService<HallViewModel>();
-        DataContext = _vm;
+        var vm = App.HostInstance.Services.GetRequiredService<HallViewModel>();
+        _vm = vm;                 // FIX: assign to field instead of shadowing
+        DataContext = vm;
 
         _listVm = App.HostInstance.Services.GetRequiredService<HallsListViewModel>();
         HallsListControl.DataContext = _listVm;
 
+        // Populate form when a hall is selected in the list
         if (_listVm is not null)
             _listVm.PropertyChanged += ListVm_PropertyChanged;
 

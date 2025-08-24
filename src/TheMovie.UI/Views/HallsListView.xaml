@@ -17,13 +17,17 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
         <TextBlock Text="Biografsale (liste)" FontSize="18" FontWeight="Bold" Margin="0 0 0 6"/>
+        
         <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="4" Padding="4">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+
+                <!-- Bind to Halls collection on HallsListViewModel -->
                 <ListView ItemsSource="{Binding Halls}"
                               SelectedItem="{Binding SelectedHall, Mode=TwoWay}"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -37,11 +41,15 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+
                 <TextBlock Grid.Row="0"
                            Text="{Binding Error}"
                            Foreground="Red"
                            Margin="4"
+                           IsHitTestVisible="False"
+                           Panel.ZIndex="1"
                            Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
                     <Button Content="Opdater" Width="80" Command="{Binding RefreshCommand}" />
                     <TextBlock Text="Henter..." Margin="8 0 0 0" Foreground="#555"
