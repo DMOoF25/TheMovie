@@ -65,8 +65,8 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
     public CinemaViewModel()
     {
         _repository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
-        AddCommand = new RelayCommand(Add, CanSubmitAdd);
-        SaveCommand = new RelayCommand(Save, CanSubmitSave);
+        AddCommand = new RelayCommand(OnAdd, CanSubmitAdd);
+        SaveCommand = new RelayCommand(OnSave, CanSubmitSave);
         DeleteCommand = new RelayCommand(Delete, CanSubmitDelete);
         ResetCommand = new RelayCommand(Reset, CanReset);
         CancelCommand = new RelayCommand(Cancel);
@@ -106,7 +106,7 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
     private bool CanSubmitDelete() => true;
     private bool CanReset() => !string.IsNullOrEmpty(Name) || !string.IsNullOrEmpty(Location) || IsEditMode;
 
-    private void Add()
+    private void OnAdd()
     {
         Error = null;
         if (!CanSubmitCore()) return;
@@ -131,7 +131,7 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Save()
+    private void OnSave()
     {
         if (_currentId is null)
         {
