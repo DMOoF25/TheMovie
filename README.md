@@ -1,5 +1,15 @@
-﻿# TheMovie
+﻿<!-- BADGES V1 -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![downloads][downloads-shield]][downloads-url]
+[![Issues][issues-shield]][issues-url]
+# TheMovie
 Demonstrate HLD and LLD for a simple WPF application using MVVM, Dependency Injection, and the Repository Pattern.
+
+[![Screenshot-menu-admin][Screenshot-menu-admin]][Screenshot-menu-admin-url]
+[![Screenshot-editMovieView][Screenshot-editMovieView]][Screenshot-editMovieView-url]
+[![Screenshot-editScreeningView][Screenshot-editScreeningView]][Screenshot-editScreeningView-url]
 
 ## Solution Structure
 
@@ -37,6 +47,38 @@ src/
 
 ## Roadmap Ideas
 
-- Async repository calls end-to-end.
-- Real persistence (SQLite / EF Core or Json file).
-- Unit tests for converters and commands.
+- Real persistence (SQLite / EF Core) for multiuser.
+- Unit tests for UI click action.
+
+## Project documentation
+
+### Glossery
+
+See the [Glossery](https://github.com/DMOoF25/TheMovie/blob/master/docs/OrdListe.md) for a Danish to English term list.
+
+
+<!-- ALL LINKS & IMAGES SHORTCUT ONLY HAVE EFFECTS WHEN THE REPO IS PUBLISH ACCESS -->
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/DMOoF25/TheMovie?style=for-the-badge
+[contributors-url]: https://github.com/DMOoF25/TheMovie/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/DMOoF25/TheMovie?style=for-the-badge
+[forks-url]: https://github.com/DMOoF25/TheMovie/network/members
+[stars-shield]: https://img.shields.io/github/stars/DMOoF25/TheMovie?style=for-the-badge
+[stars-url]: https://github.com/DMOoF25/TheMovie/stargazers
+[downloads-shield]: https://img.shields.io/github/downloads/DMOoF25/TheMovie/total?style=for-the-badge
+[downloads-url]: https://github.com/DMOoF25/TheMovie/releases
+[issues-shield]: https://img.shields.io/github/issues/DMOoF25/TheMovie?style=for-the-badge
+[issues-url]: https://github.com/DMOoF25/TheMovie/issues
+[license-shield]: https://img.shields.io/github/license/DMOoF25/TheMovie?style=for-the-badge
+[license-url]: https://github.com/DMOoF25/TheMovie/blob/master/LICENSE
+[Repos-size-shield]: https://img.shields.io/github/repo-size/DMOoF25/Dotnet.PfxCertificateManager?style=for-the-badge
+
+[Glossery-url]: https://github.com/DMOoF25/TheMovie/blob/master/docs/OrdListe.md
+
+[Screenshot-menu-admin]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-menu-admin.png
+[Screenshot-menu-admin-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-menu-admin.png
+[Screenshot-editMovieView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-editMovieView.png
+[Screenshot-editMovieView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editMovieView.png
+[Screenshot-editScreeningView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-editScreeningView.png
+[Screenshot-editScreeningView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editScreeningView.png
