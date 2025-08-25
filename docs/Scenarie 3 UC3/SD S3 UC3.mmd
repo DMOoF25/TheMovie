@@ -1,4 +1,4 @@
-﻿sequenceDiagram
+sequenceDiagram
 title SD – Scenarie 3 • UC-3: Slet booking
 
 actor Actor as "Aktor"
@@ -7,7 +7,7 @@ participant Controller as "BookingController"
 participant Repo as "BookingRepository"
 participant Store as "PersistentStorage"
 
-Actor->>UI: Vælg booking at slette
+Actor->>UI: Vaelg booking at slette
 UI->>+Controller: DeleteBooking(bookingId)
 
 Controller->>+Repo: FindBooking(bookingId)
@@ -23,4 +23,3 @@ else Fejl ved sletning
     Controller-->>UI: Fejl: "Booking kunne ikke slettes"
     UI-->>Actor: Informer fejl
 end
-ikke slettes"
