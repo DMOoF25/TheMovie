@@ -9,7 +9,7 @@
             +DateOnly PremiereDate
             +Guid InstructorId
             +Movie()
-            +Movie(string title, int duration, Guid instructorId = default)
+            +Movie(string title, int duration, DateOnly premiereDate, Guid instructorId = default)
             +HasGenre(Genre genre) bool
             +AddGenre(Genre genre) void
             +RemoveGenre(Genre genre) void
@@ -32,7 +32,6 @@
 
         class Hall {
             +Guid Id
-            +
             +string Name
             +Guid CinemaId
             +Hall()
@@ -42,11 +41,10 @@
         class Screening {
             +Guid Id
             +DateTime StartTime
-            +DateTime EndTime
             +Guid MovieId
             +Guid HallId
             +Screening()
-            +Screening(Guid movie, Guid hallId, DateTime startTime, DateTime endTime)
+            +Screening(DateTime startTime, Guid movie, Guid hallId)
         }
     }
 
