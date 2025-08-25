@@ -1,0 +1,12 @@
+﻿sequenceDiagram
+  title SSD – UC-1: Find dagens muligheder (black-box)
+
+actor Staff as "Aktør"
+participant System as "System"
+
+Staff->>System: Indtast filter (film?, dato?, biograf?)
+System-->>Staff: Viser mulige forestillinger
+
+alt Ingen resultater
+    System-->>Staff: "Ingen forestillinger matcher"
+end
