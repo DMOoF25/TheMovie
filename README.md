@@ -11,15 +11,68 @@ Demonstrate HLD and LLD for a simple WPF application using MVVM, Dependency Inje
 [![Screenshot-editMovieView][Screenshot-editMovieView]][Screenshot-editMovieView-url]
 [![Screenshot-editScreeningView][Screenshot-editScreeningView]][Screenshot-editScreeningView-url]
 
-## Solution Structure
+## Indholdsfortegnelse
+- [Om](#om)
+- [Funktionalitet](#funktionalitet)
+- [Teknologier](#teknologier)
+- [Krav](#krav)
+- [Centrale begreber](#centrale-begreber)
+- [Roadmap-idéer](#roadmap-idéer)
+- [Projektdokumentation](#projektdokumentation)
+  - [HLD](#hld)
+    - [Ordliste](#ordliste)
+  - [LLD](#lld)
+    - [Solution structure](#solution-structure)
+
+## Om
+TheMovie er et simpelt WPF-program til at administrere bestillinger af billettere og visning af film.
+Det demonstrerer arkitekturprincipper som MVVM, Dependency Injection og Repository-mønsteret.
+
+## Funktionalitet
+- Liste, tilføj, rediger og slet film.
+- Liste, tilføj, rediger og slet filminstruktør for film.
+- Liste, tilføj, rediger og slet biograf.
+- Liste, tilføj, rediger og slet sal for biograf.
+- Liste, tilføj, rediger og slet visninger (screenings) for film.
+
+## Teknologier
+- WPF (.net 9)   # Det grafiske brugergrænsefladelag baseret på XAML.
+
+## Krav
+- Windows 10 eller nyere
+- .NET 9 SDK eller nyere
+
+## Centrale begreber
+
+- Dependency Injection: Konfigureret i App.OnStartup via Host.CreateDefaultBuilder.
+- Repository-mønster: In-memory generisk base + konkret Movie-repository.
+- MVVM: ViewModels eksponerer bindbar tilstand og ICommand-instancer.
+- Validering: Simpel kommando-gating og input-parsing (DurationText).
+- Udvidbarhed: Udskift in-memory-repo med en persistent implementering ved at opdatere registreringer.
+
+## Roadmap-idéer
+
+- Reel persistens (SQLite / EF Core) til flere brugere.
+
+## Projektdokumentation
+
+### HLD
+
+#### Ordliste
+
+Se [Ordliste](https://github.com/DMOoF25/TheMovie/blob/master/docs/OrdListe.md) for en dansk-engelsk ordliste.
+
+
+### LLD
+
+#### Solution structure
 
 ```plaintext
 src/
-    TheMovie.Domain/
+    TheMovie.Domain/            # Core domain logic
         Entities/               # Core domain entity types (e.g., Movie)
-        ValueObjects/           # Immutable value objects (e.g., Duration, if added) (Other domain)
-                                # Pure business logic; no UI or infra dependencies
-    TheMovie.Application/
+        ValueObjects/           # Immutable value objects (e.g., Genre, if added) (Other domain)
+    TheMovie.Application/       # Pure business logic; no UI or infra dependencies
         Abstractions/           # Interfaces (e.g., IMovieRepository) used by higher layers
         DependencyInjection.cs  # Extension method to register application services
     TheMovie.Infrastructure/
@@ -36,26 +89,6 @@ src/
         Fakes/                  # Test doubles (e.g., FakeMovieRepository)
         ViewModels/             # Unit tests for ViewModels
 ```
-
-## Key Concepts
-
-- Dependency Injection: Configured in App.OnStartup via Host.CreateDefaultBuilder.
-- Repository Pattern: In-memory generic base + concrete Movie repository.
-- MVVM: ViewModels expose bindable state and ICommand instances.
-- Validation: Simple command gating and input parsing (DurationText).
-- Extensibility: Replace in-memory repo with persistent implementation by updating registrations.
-
-## Roadmap Ideas
-
-- Real persistence (SQLite / EF Core) for multiuser.
-- Unit tests for UI click action.
-
-## Project documentation
-
-### Glossery
-
-See the [Glossery](https://github.com/DMOoF25/TheMovie/blob/master/docs/OrdListe.md) for a Danish to English term list.
-
 
 <!-- ALL LINKS & IMAGES SHORTCUT ONLY HAVE EFFECTS WHEN THE REPO IS PUBLISH ACCESS -->
 
