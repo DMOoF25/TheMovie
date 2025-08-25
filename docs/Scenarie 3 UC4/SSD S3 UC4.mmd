@@ -1,0 +1,13 @@
+﻿sequenceDiagram
+title SSD – Scenarie 3 UC-4: Rediger booking
+
+actor Actor as "Aktor"
+participant System as "System"
+
+Actor->>System: Vaelg booking at redigere
+Actor->>System: Angiv nyt antal billetter
+System-->>Actor: Bekraeft ændring
+
+alt Antal billetter overskrider kapacitet
+    System-->>Actor: Fejl: "For mange billetter"
+end
