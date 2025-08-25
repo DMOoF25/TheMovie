@@ -18,8 +18,19 @@
 |------------|------------------|--------------|---------------------|
 | Instruktør | Klassenavn       | Instructor   | Class name          |
 | Navn       |                  | Name         |                     |
-|            |                  |              |                     |
 
+### Biograf
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+| Biograf    | Klassenavn       | Cinema       | Class name          |
+| Navn       |                  | Name         |                     |
+| Adresse    |                  | Location     |                     |
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+|            | Klassenavn       |              | Class name          |
+|            |                  |              |                     |
 
 ## Enum
 
