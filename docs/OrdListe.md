@@ -34,6 +34,13 @@
 | Sal        | Klassenavn       | Hall         | Class name          |
 | Navn       |                  | Name         |                     |
 
+### Film visning
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+| Film visning | Klassenavn       | Screening    | Class name          |
+| Starttid   |                  |              |                     |
+
 
 ### Template
 
