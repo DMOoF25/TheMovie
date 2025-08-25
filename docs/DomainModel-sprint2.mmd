@@ -19,12 +19,11 @@
         Navn
     }
 
-    class Visning {
-        Dato
-        Tidspunkt
+    class Film visning {
+        Starttid
     }
    
     Film "1..*" -- "1" Instruktør
-    Visning "1..*" -- "1" Film
-    Visning "0..*" -- "1" Sal
+    Film visning "1..*" -- "1" Film
+    Film visning "0..*" -- "1" Sal
     Sal "1..*" -- "1" Biograf
