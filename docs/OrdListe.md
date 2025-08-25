@@ -27,10 +27,22 @@
 | Navn       |                  | Name         |                     |
 | Adresse    |                  | Location     |                     |
 
+### Sal
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+| Sal        | Klassenavn       | Hall         | Class name          |
+| Navn       |                  | Name         |                     |
+
+
+### Template
+
 | Dansk term | Dansk forklaring | English term | English explanation |
 |------------|------------------|--------------|---------------------|
 |            | Klassenavn       |              | Class name          |
 |            |                  |              |                     |
+
+
 
 ## Enum
 
