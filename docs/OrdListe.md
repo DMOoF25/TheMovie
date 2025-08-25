@@ -4,7 +4,26 @@
 
 ## Domæne model til DCD
 
-### Genre
+### Film
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+| Film       | Klassenavn       | Movie        | Class name          |
+| Titel      |                  | Title        |                     |
+| Varighed   |                  | Duration     |                     |
+
+### Instruktør
+
+| Dansk term | Dansk forklaring | English term | English explanation |
+|------------|------------------|--------------|---------------------|
+| Instruktør | Klassenavn       | Instructor   | Class name          |
+| Navn       |                  | Name         |                     |
+|            |                  |              |                     |
+
+
+## Enum
+
+### Genre er på engelsk taget ud fra cvs fil eksempel
 
 | Dansk term | Dansk forklaring | English term | English explanation |
 |------------|------------------|--------------|---------------------|
@@ -22,11 +41,3 @@
 | Romantik   |                  | Romance      |                     |
 | Thriller   |                  | Thriller     |                     |
 | Krig       |                  | War          |                     |
-
-### Film
-
-| Dansk term | Dansk forklaring | English term | English explanation |
-|------------|------------------|--------------|---------------------|
-| Film       |                  | Movie        |                     |
-| Titel      |                  | Title        |                     |
-| Varighed   |                  | Duration     |                     |
