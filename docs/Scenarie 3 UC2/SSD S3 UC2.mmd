@@ -1,0 +1,17 @@
+﻿sequenceDiagram
+ title SSD – Scenarie 3 • UC-2: Opret booking
+
+actor Actor as "Aktor"
+participant System as "System"
+
+Actor->>System: Vaelg film
+Actor->>System: Vaelg dato
+Actor->>System: Vaelg biograf
+Actor->>System: Angiv antal billetter
+Actor->>System: Angiv e-mail og telefon
+
+alt Kapacitet OK
+    System-->>Actor: Bekraeft booking (kvittering / bookingnr.)
+else Antal billetter > salens kapacitet
+    System-->>Actor: Fejl: "Antallet overskrider salens kapacitet"
+end

@@ -1,0 +1,36 @@
+﻿sequenceDiagram
+
+title SD – UC-2: Opret booking 
+
+actor Customer as "Kunde"
+participant UI as "BookingUI"
+participant Controller as "BookingController"
+participant Repo as "ShowtimeRepository"
+participant Booking as "BookingService"
+participant Store as "PersistentStorage"
+
+Customer->>UI: Vælg film, dato, biograf
+Customer->>UI: Angiv billetantal, email, telefon
+UI->>+Controller: CreateBooking(showtimeId, tickets, email, phone)
+
+Controller->>+Repo: GetShowtime(showtimeId)
+Repo-->>-Controller: Showtime + kapacitet
+
+Controller->>+Booking: ValidateCapacity(showtime, tickets)
+alt Kapacitet OK
+    Booking-->>Controller: Valid
+    Controller->>+Store: SaveBooking(showtimeId, tickets, email, phone)
+    alt Gemning OK
+        Store-->>-Controller: Success
+        Controller-->>UI: Booking bekræftet
+        UI-->>Customer: Viser bekræftelse
+    else Fejl ved gemning
+        Store-->>Controller: Error
+        Controller-->>UI: Booking mislykkedes
+        UI-->>Customer: Informer fejl
+    end
+else Kapacitet overskredet
+    Booking-->>Controller: Invalid
+    Controller-->>UI: Fejl: "For mange billetter"
+    UI-->>Customer: Informer fejl
+end
