@@ -1,0 +1,21 @@
+﻿sequenceDiagram
+    actor Staff as Ansat
+    participant UI as StaffUI
+    participant Controller as SearchController
+    participant Repo as ShowtimeRepository
+    participant Filter as FilterEngine
+
+    Note over Staff,UI: UC-4 • Find dagens muligheder
+
+    Staff->>UI: Indtast filter (film?, dato?, biograf?)
+    UI->>Controller: FilterShowtimes(movie?, date?, cinema?)
+    Controller->>Repo: GetAllShowtimes()
+    Repo-->>Controller: Liste af alle forestillinger
+    Controller->>Filter: ApplyFilters(liste, kriterier)
+    Filter-->>Controller: Filtreret liste
+    Controller-->>UI: Returnér liste (mulige forestillinger)
+    alt Resultater fundet
+        UI-->>Staff: Vis liste over muligheder
+    else Ingen resultater
+        UI-->>Staff: "Ingen forestillinger matcher"
+    end
