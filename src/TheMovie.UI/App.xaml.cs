@@ -31,7 +31,7 @@ public partial class App : System.Windows.Application
                     .AddMovieInfrastructure();
 
                 // Movies
-                services.AddTransient<MoviesListViewModel>();
+                services.AddTransient<MovieListViewModel>();
                 services.AddTransient<MovieViewModel>();
                 services.AddTransient<EditMovieView>();
 

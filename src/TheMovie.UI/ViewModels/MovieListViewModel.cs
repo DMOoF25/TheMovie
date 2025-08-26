@@ -7,7 +7,7 @@ using TheMovie.UI.Commands;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class MoviesListViewModel : INotifyPropertyChanged
+public sealed class MovieListViewModel : INotifyPropertyChanged
 {
     private readonly IMovieRepository _repository;
 
@@ -41,7 +41,7 @@ public sealed class MoviesListViewModel : INotifyPropertyChanged
 
     public ICommand RefreshCommand { get; }
 
-    public MoviesListViewModel(IMovieRepository repository)
+    public MovieListViewModel(IMovieRepository repository)
     {
         _repository = repository;
         RefreshCommand = new RelayCommand(async () => await RefreshAsync(), () => !IsLoading);

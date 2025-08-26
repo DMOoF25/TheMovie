@@ -10,7 +10,7 @@ namespace TheMovie.UI.Views;
 public partial class EditMovieView : Page
 {
     private static readonly Regex _digits = new(@"^[0-9]+$", RegexOptions.Compiled);
-    private MoviesListViewModel? _listVm;
+    private MovieListViewModel? _listVm;
     private MovieViewModel? _vm;
 
     public EditMovieView()
@@ -21,7 +21,7 @@ public partial class EditMovieView : Page
         _vm = vm;                 // FIX: assign to field instead of shadowing
         DataContext = vm;
 
-        _listVm = App.HostInstance.Services.GetRequiredService<MoviesListViewModel>();
+        _listVm = App.HostInstance.Services.GetRequiredService<MovieListViewModel>();
         MoviesListControl.DataContext = _listVm;
 
         // Populate form when a movie is selected in the list
@@ -45,7 +45,7 @@ public partial class EditMovieView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MoviesListViewModel.SelectedMovie)
+        if (e.PropertyName == nameof(MovieListViewModel.SelectedMovie)
             && _listVm?.SelectedMovie is { } item
             && _vm is not null)
         {

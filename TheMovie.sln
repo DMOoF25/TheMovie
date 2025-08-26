@@ -26,9 +26,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheMovie.Persistents.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{03371D06-5C33-49D0-A8EB-AB53BD397381}"
 	ProjectSection(SolutionItems) = preProject
-		docs\DCD-spirnt 2.mmd = docs\DCD-spirnt 2.mmd
+		docs\DCD-spirnt2.mmd = docs\DCD-spirnt2.mmd
+		docs\DCD-MVVM-EditMovieView.mmd = docs\DCD-MVVM-EditMovieView.mmd
+		docs\DCD-spirnt3.mmd = docs\DCD-spirnt3.mmd
 		docs\DCD.mmd = docs\DCD.mmd
 		docs\DomainModel-sprint2.mmd = docs\DomainModel-sprint2.mmd
+		docs\DomainModel-sprint3.mmd = docs\DomainModel-sprint3.mmd
 		docs\DomainModel.mmd = docs\DomainModel.mmd
 	EndProjectSection
 EndProject
