@@ -1,0 +1,43 @@
+﻿classDiagram
+    class Film {
+        Titel
+        Varighed
+        Premieredato
+        Genre
+    }
+
+    class Instruktør {
+        Navn
+    }
+
+    class Biograf {
+        Navn
+        Adresse
+    }
+
+    class Sal {
+        Navn
+        AntalSæder
+    }
+
+    class FilmVisning {
+        Starttid
+    }
+
+    class ReservationList {
+        Tlf
+        Email
+        AntalBilletter
+    }
+
+    %% Ekstra information for bedre kundeservice %%
+    note for Biograf "Adresse kan være relevant for kunden"
+
+    %% GDPR note on personal data
+    note for ReservationList "Personoplysninger (Tlf, Email) skal slettes efter endt brug."
+
+    Film "1..*" -- "1" Instruktør
+    FilmVisning "1..*" -- "1" Film
+    FilmVisning "0..*" -- "1" Sal
+    Sal "1..*" -- "1" Biograf
+    ReservationList "0..*" -- "1" FilmVisning
