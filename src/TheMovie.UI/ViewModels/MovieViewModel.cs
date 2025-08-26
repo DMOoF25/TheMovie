@@ -8,7 +8,6 @@ using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
 using TheMovie.Domain.ValueObjects;
 using TheMovie.UI.Commands;
-using TheMovie.UI.Views;
 
 namespace TheMovie.UI.ViewModels;
 
@@ -326,7 +325,7 @@ public sealed class MovieViewModel : INotifyPropertyChanged
         OnReset();
 
         var mainFrame = (System.Windows.Application.Current.MainWindow as MainWindow)?.MainFrame;
-        mainFrame?.Navigate(new MainPage());
+        //mainFrame?.Navigate(new MainPageView());
     }
     #endregion
 

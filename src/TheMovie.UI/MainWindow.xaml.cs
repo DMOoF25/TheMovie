@@ -8,9 +8,13 @@ namespace TheMovie.UI;
 /// </summary>
 public partial class MainWindow : Window
 {
+
+
     public MainWindow()
     {
         InitializeComponent();
+        // Navigate to the front page on startup
+        //MainFrame.Navigate(new MainPageView());
     }
 
     #region Menu bar
