@@ -13,6 +13,7 @@ public static class DependencyInjection
         services.AddSingleton<IInstructorRepository, InstructorRepository>();
         services.AddSingleton<IHallRepository, HallRepository>();
         services.AddSingleton<IScreeningRepository, ScreeningRepository>();
+        services.AddSingleton<IBookingRepository, BookingRepository>();
         return services;
     }
 }
