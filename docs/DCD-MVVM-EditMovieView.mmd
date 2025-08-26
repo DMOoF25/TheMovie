@@ -1,0 +1,89 @@
+﻿classDiagram
+    direction TB
+    namespace TheMovie.UI.Views {
+        class EditMovieView {
+            +EditMovieView()
+        }
+
+        class MovieListView {
+            +MovieListView()
+        }
+    }
+
+    
+    namespace TheMovie.UI.ViewModels {
+        class MovieViewModel {
+                +string Title
+                +string DurationText
+                +DateOnly PremiereDate
+                +Guid? SelectedInstructorId
+                +ObservableCollection~GenreOptionViewModel~ GenreOptions
+                +ObservableCollection~InstructorListItemViewModel~ Instructors
+                +ICommand AddCommand
+                +ICommand SaveCommand
+                +ICommand ResetCommand
+                +ICommand CancelCommand
+                +ICommand DeleteCommand
+                +bool IsSaving
+                +string? Error
+                +bool IsEditMode
+                +bool IsAddMode
+                +event EventHandler~Movie~ MovieSaved
+                +Task LoadAsync(Guid id)
+                +Task InitializeAsync()
+                +bool Validate()
+        }
+
+        class MovieListViewModel {
+            +MovieListItemViewModel? SelectedMovie
+            +ObservableCollection~MovieListItemViewModel~ Movies
+            +bool IsLoading
+            +string? Error
+            +ICommand RefreshCommand
+            +Task RefreshAsync()
+            +event PropertyChangedEventHandler? PropertyChanged
+
+        }
+
+        class MovieListItemViewModel {
+            +Guid Id
+            +string Title
+            +int Duration
+            +DateOnly PremiereDate
+            +string GenresDisplay
+            +string InstructorNameDisplay
+            +MovieListItemViewModel(Movie movie)
+        }
+    }
+
+    namespace TheMovie.UI.Commands {
+        class RelayCommand {
+            +RelayCommand(Action execute, Func~bool~ canExecute)
+            +Execute(object) void
+            +CanExecute(object) bool
+        }
+    }
+    namespace TheMovie.UI.Converters {
+        class NullToVisibilityConverter {
+            +Convert(object, Type, object, CultureInfo) object
+            +ConvertBack(object, Type, object, CultureInfo) object
+        }
+    }
+    
+    EditMovieView ..> NullToVisibilityConverter : Uses
+    EditMovieView --o MovieViewModel : DataContext binds
+
+    MovieListView --o MovieListViewModel : DataContext binds
+    MovieListViewModel ..> MovieListItemViewModel : Uses
+
+    MovieViewModel ..> Movie : Uses
+    MovieViewModel ..> GenreOptionViewModel : Uses
+    MovieViewModel ..> InstructorListItemViewModel : Uses
+    MovieViewModel ..> RelayCommand : Uses
+
+    NullToVisibilityConverter ..|> IValueConverter
+
+    note for Movie "See DCD.mmd for Movie class details"
+    note for GenreOptionViewModel "See DCD.mmd for GenreOptionViewModel class details"
+    note for InstructorListItemViewModel "See DCD.mmd for InstructorListItemViewModel class details"
+

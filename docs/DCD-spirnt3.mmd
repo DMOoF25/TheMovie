@@ -1,0 +1,186 @@
+﻿classDiagram
+    direction TB
+    namespace TheMovie.Domain.Entities {
+        class Movie {
+            +Guid Id
+            +string Title
+            +int Duration
+            +Genre Genre
+            +DateOnly PremiereDate
+            +Guid InstructorId
+            +Movie()
+            +Movie(string title, int duration, DateOnly premiereDate, Guid instructorId = default)
+            +HasGenre(Genre genre) bool
+            +AddGenre(Genre genre) void
+            +RemoveGenre(Genre genre) void
+        }
+
+        class Instructor {
+            +Guid Id
+            +string Name
+            +Instructor()
+            +Instructor(string name)
+        }
+
+        class Cinema {
+            +Guid Id
+            +string Name
+            +string Location
+            +Cinema()
+            +Cinema(string name, string location)
+        }
+
+        class Hall {
+            +Guid Id
+            +string Name
+            +Guid CinemaId
+            +int SeatCapacity
+            +Hall()
+            +Hall(string name, Guid cinemaId)
+        }
+
+        class Screening {
+            +Guid Id
+            +DateTime StartTime
+            +Guid MovieId
+            +Guid HallId
+            +Screening()
+            +Screening(DateTime startTime, Guid movie, Guid hallId)
+        }
+
+        class Booking {
+            +Guid Id
+            +Guid ScreeningId
+            +int NumberOfSeats
+            +Booking()
+            +Booking(Guid screeningId, int numberOfSeats)
+        }
+    }
+
+    namespace TheMovie.Domain.ValueObjects {
+        class Genre {
+            Action
+            Adventure
+            Biography
+            Comedy
+            Crime
+            Drama
+            History
+            Horror
+            Music
+            Mystery
+            Romance
+            Thriller
+            War
+        }
+    }
+
+    namespace TheMovie.Infrastructure.Persistens {
+        class MovieRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+        }
+
+        class InstructorRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+        }
+
+        class CinemaRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+        }
+
+        class HallRepository {
+            #LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCvsAsync(string filePath, CancellationToken cancellationToken = default) Task
+        }
+
+        class ScreeningRepository {
+            #LoadFromCsvAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCsvAsync(string filePath, CancellationToken cancellationToken = default) Task
+            +FilterByDateRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken = default) Task~IEnumerable~Screening~~
+            +FilterByHallAsync(Guid hallId, CancellationToken cancellationToken = default) Task~IEnumerable~Screening~~
+            +FilterByMovieAsync(Guid movieId, CancellationToken cancellationToken = default) Task~IEnumerable~Screening~~
+        }
+
+        class BookingRepository {
+            #LoadFromCsvAsync(string filePath, CancellationToken cancellationToken = default) Task
+            #SaveToCsvAsync(string filePath, CancellationToken cancellationToken = default) Task
+            +DeleteUserInfoAsync(DateTime olderThanScreeningStartTime =  DateTime.UtcNow.AddYears(-2), CancellationToken cancellationToken = default) Task
+        }
+
+        class RepositoryBase~TEntity~ {
+            -ConcurrentDictionary~Guid, TEntity~ _store
+            -Func~TEntity, Guid~ _getId
+            -Action~TEntity, Guid~ _setId
+            RepositoryBase(Func~TEntity, Guid~? idSelector = null, Action~TEntity, Guid~? idSetter = null)
+        }
+    }
+
+    namespace TheMovie.Application.Abstractions {
+        class IRepositoryBase {
+            +AddAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+            +AddRangeAsync(IEnumerable~TEntity~ entities, CancellationToken cancellationToken = default) Task
+            +GetByIdAsync(Guid id, CancellationToken cancellationToken = default) Task~TEntity~
+            +GetAllAsync(CancellationToken cancellationToken = default) Task~IEnumerable~TEntity~~
+            +UpdateAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+            +DeleteAsync(TEntity entity, CancellationToken cancellationToken = default) Task
+        }
+
+        class IMovieRepository {
+        }
+        class IInstructorRepository {
+        }
+        class ICinemaRepository {
+        }
+        class IHallRepository {
+        }
+        class IScreeningRepository {
+        }
+        class IBookingRepository {
+            +DeleteUserInfoAsync(DateTime olderThanScreeningStartTime =  DateTime.UtcNow.AddYears(-2), CancellationToken cancellationToken = default) Task
+        }
+
+    }
+
+    <<interface>> IRepositoryBase
+    <<interface>> IMovieRepository
+    <<interface>> IInstructorRepository
+    <<interface>> ICinemaRepository
+    <<interface>> IHallRepository
+    <<interface>> IScreeningRepository
+    <<interface>> IBookingRepository
+    <<abstract>> RepositoryBase
+    <<enumeration>> Genre
+
+    %% Relationships
+    Genre <-- Movie : uses
+    Movie --* MovieRepository : manages
+    Instructor --* InstructorRepository : manages
+    Cinema --* CinemaRepository : manages
+    Hall --* HallRepository : manages
+    Screening --* ScreeningRepository : manages
+    Booking --* BookingRepository : manages
+
+    MovieRepository ..|> IMovieRepository : "implements"
+    InstructorRepository ..|> IInstructorRepository : "implements"
+    CinemaRepository ..|> ICinemaRepository : "implements"
+    HallRepository ..|> IHallRepository : "implements"
+    ScreeningRepository ..|> IScreeningRepository : "implements"
+    RepositoryBase ..|> IRepositoryBase : "implements"
+    BookingRepository ..|> IBookingRepository : "implements"
+
+    MovieRepository ..|> RepositoryBase : "inherits"
+    InstructorRepository ..|> RepositoryBase : "inherits"
+    CinemaRepository ..|> RepositoryBase : "inherits"
+    HallRepository ..|> RepositoryBase : "inherits"
+    ScreeningRepository ..|> RepositoryBase : "inherits"
+    BookingRepository ..|> RepositoryBase : "inherits"
+
+    IMovieRepository ..|> IRepositoryBase : "inherits"
+    IInstructorRepository ..|> IRepositoryBase : "inherits"
+    ICinemaRepository ..|> IRepositoryBase : "inherits"
+    IHallRepository ..|> IRepositoryBase : "inherits"
+    IScreeningRepository ..|> IRepositoryBase : "inherits"
+    IBookingRepository ..|> IRepositoryBase : "inherits"
