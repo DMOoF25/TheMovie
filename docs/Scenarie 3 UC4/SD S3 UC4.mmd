@@ -2,7 +2,7 @@
 title SD – Scenarie 3 • UC-4: Rediger booking
 
 
-    actor Ansat
+  actor Ansat
     participant BookingUI
     participant BookingController
     participant BookingService
@@ -18,9 +18,10 @@ title SD – Scenarie 3 • UC-4: Rediger booking
         Database-->>BookingService: Bekræftet
         BookingService-->>BookingController: Bekræftelse
         BookingController-->>BookingUI: Vis bekræftelse
+        BookingUI-->>Ansat: Bekræftelse på ændring
     else Kapacitet overskredet / systemfejl
         Database-->>BookingService: Fejl
         BookingService-->>BookingController: Fejlmeddelelse
         BookingController-->>BookingUI: Vis fejlmeddelelse
+        BookingUI-->>Ansat: Fejlmeddelelse
     end
-
