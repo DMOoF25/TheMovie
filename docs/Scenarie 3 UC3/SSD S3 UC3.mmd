@@ -1,12 +1,12 @@
 ﻿sequenceDiagram
 title SSD – Scenarie 3: UC-3: Slet booking
 
-    actor Ansat
+      actor Aktør
     participant System
 
-    Ansat->>System: Vælg "Slet booking"
+    Aktør->>System: Vælg "Slet booking"
     alt Booking slettet
-        System-->>Ansat: Bekræftelse på sletning
+        System-->>Aktør: Bekræftelse på sletning
     else Fejl (fx ingen adgang eller teknisk fejl)
-        System-->>Ansat: Fejlmeddelelse
+        System-->>Aktør: Fejlmeddelelse
     end
