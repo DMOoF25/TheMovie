@@ -46,6 +46,6 @@
                     Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
-        <views:InstructorsListView x:Name="InstructorsListControl"/>
+        <views:InstructorListView x:Name="InstructorsListControl"/>
     </StackPanel>
 </Page>

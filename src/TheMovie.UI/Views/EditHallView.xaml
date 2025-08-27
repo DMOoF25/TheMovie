@@ -60,6 +60,6 @@
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
 
-        <view:HallsListView x:Name="HallsListControl"/>
+        <view:HallListView x:Name="HallListControl"/>
     </StackPanel>
 </Page>

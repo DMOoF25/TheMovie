@@ -31,5 +31,4 @@ public sealed class InstructorListViewModel : ListViewModelBase<IInstructorRepos
             (RefreshCommandState as RelayCommand)?.RaiseCanExecuteChanged();
         }
     }
-
 }

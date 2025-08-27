@@ -11,8 +11,8 @@ namespace TheMovie.UI.Views;
 /// </summary>
 public partial class EditHallView : Page
 {
-    private readonly HallListViewModel _listVm;
-    private readonly HallViewModel _vm;
+    private readonly HallListViewModel _listVm = null!;
+    private readonly HallViewModel _vm = null!;
 
     public EditHallView()
     {
@@ -23,7 +23,7 @@ public partial class EditHallView : Page
         DataContext = vm;
 
         _listVm = App.HostInstance.Services.GetRequiredService<HallListViewModel>();
-        HallsListControl.DataContext = _listVm;
+        HallListControl.DataContext = _listVm;
 
         // Populate form when a hall is selected in the list
         if (_listVm is not null)

@@ -10,7 +10,7 @@ namespace TheMovie.UI.ViewModels;
 public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking>
 {
     // To track current entity in edit mode
-    private Guid? _currentId;
+    private readonly Guid? _currentId = null;
 
     //private readonly IBookingRepository _repository;
     private readonly IScreeningRepository _screeningRepository;

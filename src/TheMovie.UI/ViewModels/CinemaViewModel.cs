@@ -64,7 +64,7 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
     public ICommand ResetCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public event EventHandler<Cinema>? CinemaSaved;
+    public event EventHandler<Cinema?>? CinemaSaved;
 
     public CinemaViewModel()
     {

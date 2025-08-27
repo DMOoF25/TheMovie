@@ -26,8 +26,8 @@ public partial class EditCinemaView : Page
 
         vm.CinemaSaved += (_, __) =>
         {
-            if (_listVm is not null)
-                _ = _listVm.RefreshAsync();
+            if (_listVm?.RefreshCommandState is { } cmd && cmd.CanExecute(null))
+                cmd.Execute(null);
         };
 
         Loaded += async (_, __) =>

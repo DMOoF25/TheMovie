@@ -52,14 +52,16 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         }
     }
 
-    // State fields
+    // Dropdown options
     public ObservableCollection<CinemaListItemViewModel> Cinemas { get; private set; } = [];
 
     public event EventHandler<Hall>? HallSaved;
 
-    public HallViewModel(IHallRepository? repository = null) : base(repository ?? App.HostInstance.Services.GetRequiredService<IHallRepository>())
+    public HallViewModel(IHallRepository? selected = null)
+        : base(selected ?? App.HostInstance.Services.GetRequiredService<IHallRepository>())
     {
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
+        _ = LoadCinemaOption();
     }
 
 

@@ -75,6 +75,6 @@
         </StackPanel>
 
         <!-- List -->
-        <views:ScreeningsListView x:Name="ScreeningsListControl"/>
+        <views:ScreeningListView x:Name="ScreeningsListControl"/>
     </StackPanel>
 </Page>

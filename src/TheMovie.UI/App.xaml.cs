@@ -30,27 +30,27 @@ public partial class App : System.Windows.Application
                     .AddMovieApplication()
                     .AddMovieInfrastructure();
 
-                // Items
+                // Movie
                 services.AddTransient<MovieListViewModel>();
                 services.AddTransient<MovieViewModel>();
                 services.AddTransient<EditMovieView>();
 
-                // SelectedItem
+                // Cinema
                 services.AddTransient<CinemaListViewModel>();
                 services.AddTransient<CinemaViewModel>();
                 services.AddTransient<EditCinemaView>();
 
-                // SelectedItem
+                // Instroctor
                 services.AddTransient<InstructorListViewModel>();
                 services.AddTransient<InstructorViewModel>();
                 services.AddTransient<EditInstructorView>();
 
-                // Irems
+                // Hall
                 services.AddTransient<HallListViewModel>();
                 services.AddTransient<HallViewModel>();
                 services.AddTransient<EditHallView>();
 
-                // SelectedItem
+                // Screening
                 services.AddTransient<ScreeningListViewModel>();
                 services.AddTransient<ScreeningViewModel>();
                 services.AddTransient<EditScreeningView>();

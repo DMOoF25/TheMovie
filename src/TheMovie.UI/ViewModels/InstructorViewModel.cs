@@ -52,7 +52,9 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
     public ICommand ResetCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public event EventHandler<Instructor>? InstructorSaved;
+    //public event EventHandler<Instructor>? InstructorSaved;
+    // Change the event declaration to allow null for the Instructor parameter
+    public event EventHandler<Instructor?>? InstructorSaved;
 
     public InstructorViewModel(IInstructorRepository? repository = null)
     {
