@@ -1,12 +1,11 @@
 
    sequenceDiagram
    title SD - Scenarie 3 UC-2: Opret booking
-    actor Aktør
+   actor Aktør
     participant BookingUI
     participant BookingController
     participant BookingService
     participant Database
-    participant EmailService
 
     Aktør->>BookingUI: Indtast bookingoplysninger
     BookingUI->>BookingController: Send bookingdata
@@ -16,8 +15,6 @@
         Database-->>BookingService: OK
         BookingService->>Database: Gem booking
         Database-->>BookingService: Bekræftet
-        BookingService->>EmailService: Send bekræftelse
-        EmailService-->>BookingService: OK
         BookingService-->>BookingController: Booking oprettet
         BookingController-->>BookingUI: Vis bekræftelse
         BookingUI-->>Aktør: Bekræftelse på booking
@@ -27,3 +24,4 @@
         BookingController-->>BookingUI: Vis fejlmeddelelse
         BookingUI-->>Aktør: Fejlmeddelelse
     end
+
