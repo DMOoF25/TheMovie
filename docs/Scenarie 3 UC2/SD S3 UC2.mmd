@@ -1,12 +1,29 @@
-sequenceDiagram
-   actor Aktør
-    participant System
 
-    Aktør->>System: Vælg film, dato, biograf, antal billetter
-    Aktør->>System: Indtast e-mail og telefonnummer
-    Aktør->>System: Tryk "Book billet"
-    alt Booking oprettet
-        System-->>Aktør: Vis bekræftelse (+ evt. e-mail)
-    else Fejl (fx kapacitet overskredet)
-        System-->>Aktør: Vis fejlmeddelelse og mulighed for at ændre antal billetter
+   sequenceDiagram
+   title SD - Scenarie 3 UC-2: Opret booking
+    actor Aktør
+    participant BookingUI
+    participant BookingController
+    participant BookingService
+    participant Database
+    participant EmailService
+
+    Aktør->>BookingUI: Indtast bookingoplysninger
+    BookingUI->>BookingController: Send bookingdata
+    BookingController->>BookingService: Opret booking
+    BookingService->>Database: Tjek kapacitet
+    alt Kapacitet OK
+        Database-->>BookingService: OK
+        BookingService->>Database: Gem booking
+        Database-->>BookingService: Bekræftet
+        BookingService->>EmailService: Send bekræftelse
+        EmailService-->>BookingService: OK
+        BookingService-->>BookingController: Booking oprettet
+        BookingController-->>BookingUI: Vis bekræftelse
+        BookingUI-->>Aktør: Bekræftelse på booking
+    else Kapacitet overskredet
+        Database-->>BookingService: Afvist
+        BookingService-->>BookingController: Fejlmeddelelse
+        BookingController-->>BookingUI: Vis fejlmeddelelse
+        BookingUI-->>Aktør: Fejlmeddelelse
     end
