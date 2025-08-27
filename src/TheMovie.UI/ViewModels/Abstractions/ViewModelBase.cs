@@ -47,11 +47,12 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
     {
         _repository = repository ?? App.HostInstance.Services.GetRequiredService<TRepos>();
 
-        AddCommand = new RelayCommand(OnAdd, CanAdd);
-        SaveCommand = new RelayCommand(OnSave, CanSave);
-        DeleteCommand = new RelayCommand(OnDelete, CanDelete);
-        ResetCommand = new RelayCommand(OnReset, CanReset);
-        CancelCommand = new RelayCommand(OnCancel, CanCancel);
+        // Change RelayCommand instantiations to use async-compatible command
+        AddCommand = new RelayCommand(async () => await OnAddAsync(), CanAdd);
+        SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
+        DeleteCommand = new RelayCommand(async () => await OnDeleteAsync(), CanDelete);
+        ResetCommand = new RelayCommand(async () => await OnResetAsync(), CanReset);
+        CancelCommand = new RelayCommand(async () => await OnCancelAsync(), CanCancel);
 
         IsEditMode = false;
     }
@@ -70,18 +71,18 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
     #endregion
 
     #region Command Handlers
-    protected abstract void OnAdd();
+    protected abstract Task OnAddAsync();
 
-    protected abstract void OnSave();
+    protected abstract Task OnSaveAsync();
 
-    protected void OnCancel()
+    protected async Task OnCancelAsync()
     {
-        OnReset();
+        await OnResetAsync();
     }
 
-    protected abstract void OnDelete();
+    protected abstract Task OnDeleteAsync();
 
-    protected abstract void OnReset();
+    protected abstract Task OnResetAsync();
 
     #endregion
 

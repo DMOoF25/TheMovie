@@ -1,17 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
-using TheMovie.UI.Commands;
+using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public class ScreeningViewModel : INotifyPropertyChanged
+public sealed class ScreeningViewModel : ViewModelBase<IScreeningRepository, Screening>
 {
-    private readonly IScreeningRepository _repository;
     private readonly IMovieRepository _movieRepository;
     private readonly ICinemaRepository _cinemaRepository;
     private readonly IHallRepository _hallRepository;
@@ -101,44 +97,11 @@ public class ScreeningViewModel : INotifyPropertyChanged
 
     private readonly List<HallListItemViewModel> _allHalls = new();
 
-    public ICommand AddCommand { get; }
-    public ICommand SaveCommand { get; }
-    public ICommand ResetCommand { get; }
-    public ICommand CancelCommand { get; }
-    public ICommand DeleteCommand { get; }
-
-    private string? _error;
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
-    }
-    private bool _isSaving;
-    public bool IsSaving
-    {
-        get => _isSaving;
-        private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommandStates(); }
-    }
-    private bool _isEditMode;
-    public bool IsEditMode
-    {
-        get => _isEditMode;
-        private set
-        {
-            if (_isEditMode == value) return;
-            _isEditMode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsAddMode));
-            RefreshCommandStates();
-        }
-    }
-    public bool IsAddMode => !IsEditMode;
-
     public event EventHandler<Screening>? ScreeningSaved;
 
-    public ScreeningViewModel(IScreeningRepository repository)
+    public ScreeningViewModel(ScreeningListItemViewModel? selected = default)
+        : base(App.HostInstance.Services.GetRequiredService<IScreeningRepository>())
     {
-        _repository = repository ?? App.HostInstance.Services.GetRequiredService<IScreeningRepository>();
         _movieRepository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
         _hallRepository = App.HostInstance.Services.GetRequiredService<IHallRepository>();
@@ -146,17 +109,34 @@ public class ScreeningViewModel : INotifyPropertyChanged
         _ = LoadMoviesAsync();
         _ = LoadCinemasAsync();
         _ = LoadHallsAsync();
-
-        AddCommand = new RelayCommand(async () => await OnAddAsync(), CanAdd);
-        SaveCommand = new RelayCommand(async () => await OnSaveAsync(), CanSave);
-        ResetCommand = new RelayCommand(OnReset, CanReset);
-        CancelCommand = new RelayCommand(Cancel);
-        DeleteCommand = new RelayCommand(async () => await DeleteAsync(), CanDelete);
-
-        IsEditMode = false;
     }
 
     #region Load method
+    public override async Task LoadAsync(Guid screeningId)
+    {
+        Error = null;
+        var entity = await _repository.GetByIdAsync(screeningId);
+        if (entity is null)
+        {
+            Error = "Kunne ikke indlæse forestillingen.";
+            return;
+        }
+        _currentId = entity.Id;
+
+        // Resolve hall to get cinema for filtering
+        var hall = await _hallRepository.GetByIdAsync(entity.HallId);
+        SelectedCinemaId = hall?.CinemaId;
+        // FilterHalls() runs on SelectedCinemaId setter
+
+        SelectedHallId = entity.HallId;
+        SelectedMovieId = entity.MovieId;
+        SelectedDate = entity.StartTime.Date;
+        StartTimeString = entity.StartTime.ToString("HH:mm");
+
+        IsEditMode = true;
+        Error = null;
+    }
+
     private async Task LoadCinemasAsync()
     {
         try
@@ -206,7 +186,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
     #endregion
 
     #region CanXXX methods
-    private bool CanSubmit() =>
+    protected override bool CanSubmitCore() =>
         !IsSaving &&
         SelectedCinemaId.HasValue &&
         SelectedMovieId.HasValue &&
@@ -214,10 +194,6 @@ public class ScreeningViewModel : INotifyPropertyChanged
         SelectedDate.HasValue &&
         TryParseTime(StartTimeString, out _);
 
-    private bool CanAdd() => CanSubmit() && IsAddMode;
-    private bool CanSave() => CanSubmit() && IsEditMode;
-    private bool CanReset() => (IsEditMode || SelectedCinemaId != null || SelectedMovieId != null || SelectedHallId != null);
-    private bool CanDelete() => IsEditMode && !IsSaving;
     #endregion
 
     #region Helpers
@@ -271,7 +247,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
     #endregion
 
     #region Command Handlers
-    private async Task OnAddAsync()
+    protected override async Task OnAddAsync()
     {
         if (!CanAdd()) return;
         IsSaving = true;
@@ -300,7 +276,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
         {
             await _repository.AddAsync(screening);
             ScreeningSaved?.Invoke(this, screening);
-            // Reset back to add mode
+            // OnResetAsync back to add mode
             IsEditMode = false;
             SelectedHallId = null;
             SelectedMovieId = null;
@@ -317,32 +293,9 @@ public class ScreeningViewModel : INotifyPropertyChanged
         }
     }
 
-    public async Task LoadAsync(Guid screeningId)
-    {
-        Error = null;
-        var entity = await _repository.GetByIdAsync(screeningId);
-        if (entity is null)
-        {
-            Error = "Kunne ikke indlæse forestillingen.";
-            return;
-        }
-        _currentId = entity.Id;
 
-        // Resolve hall to get cinema for filtering
-        var hall = await _hallRepository.GetByIdAsync(entity.HallId);
-        SelectedCinemaId = hall?.CinemaId;
-        // FilterHalls() runs on SelectedCinemaId setter
 
-        SelectedHallId = entity.HallId;
-        SelectedMovieId = entity.MovieId;
-        SelectedDate = entity.StartTime.Date;
-        StartTimeString = entity.StartTime.ToString("HH:mm");
-
-        IsEditMode = true;
-        Error = null;
-    }
-
-    private async Task OnSaveAsync()
+    protected override async Task OnSaveAsync()
     {
         if (_currentId is null)
         {
@@ -381,7 +334,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
             await _repository.UpdateAsync(current);
             ScreeningSaved?.Invoke(this, current);
             IsEditMode = false;
-            OnReset();
+            await OnResetAsync();
         }
         catch
         {
@@ -393,7 +346,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
         }
     }
 
-    private void OnReset()
+    protected override async Task OnResetAsync()
     {
         _currentId = null;
         SelectedCinemaId = null;
@@ -403,15 +356,10 @@ public class ScreeningViewModel : INotifyPropertyChanged
         StartTimeString = "12:00";
         IsEditMode = false;
         Error = null;
+        await Task.CompletedTask;
     }
 
-    private void Cancel()
-    {
-        OnReset();
-        Error = null;
-    }
-
-    private async Task DeleteAsync()
+    protected override async Task OnDeleteAsync()
     {
         if (!CanDelete() || _currentId is null) return;
         IsSaving = true;
@@ -420,7 +368,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
         {
             await _repository.DeleteAsync(_currentId.Value);
             ScreeningSaved?.Invoke(this, null!);
-            OnReset();
+            await OnResetAsync();
         }
         catch
         {
@@ -433,15 +381,4 @@ public class ScreeningViewModel : INotifyPropertyChanged
     }
     #endregion
 
-    private void RefreshCommandStates()
-    {
-        (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (ResetCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (DeleteCommand as RelayCommand)?.RaiseCanExecuteChanged();
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
