@@ -7,7 +7,7 @@ participant Controller as "BookingController"
 participant Repo as "BookingRepository"
 participant Store as "PersistentStorage"
 
-Actor->>UI: Vælg booking at slette
+Actor->>UI: Vaelg booking at slette
 UI->>+Controller: DeleteBooking(bookingId)
 
 Controller->>+Repo: FindBooking(bookingId)
