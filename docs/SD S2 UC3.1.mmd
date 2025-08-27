@@ -1,11 +1,11 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
+    actor JensPeter as "Aktør"
     participant UI as "MainView (UI)"
     participant Form as "AddDirectorForm (UI)"
     participant VM as "AddDirectorViewModel"
     participant Service as "DirectorService"
     participant Repo as "DirectorRepository"
-    participant DB as "Persistens"
+    participant DB as "Infrastructure"
 
     JensPeter->>UI: Clicks "Add New Director"
     UI->>+Form: Opens AddDirectorForm
