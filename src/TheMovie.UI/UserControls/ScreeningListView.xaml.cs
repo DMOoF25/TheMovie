@@ -3,11 +3,11 @@
 namespace TheMovie.UI.Views;
 
 /// <summary>
-/// Interaction logic for ScreeningsListView.xaml
+/// Interaction logic for ScreeningListView.xaml
 /// </summary>
-public partial class ScreeningsListView : UserControl
+public partial class ScreeningListView : UserControl
 {
-    public ScreeningsListView()
+    public ScreeningListView()
     {
         InitializeComponent();
     }

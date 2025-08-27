@@ -2,9 +2,9 @@
 
 namespace TheMovie.UI.Views;
 
-public partial class InstructorsListView : UserControl
+public partial class CinemaListView : UserControl
 {
-    public InstructorsListView()
+    public CinemaListView()
     {
         InitializeComponent();
     }

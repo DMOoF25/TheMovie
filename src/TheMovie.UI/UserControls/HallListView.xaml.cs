@@ -2,9 +2,9 @@
 
 namespace TheMovie.UI.Views;
 
-public partial class HallsListView : UserControl
+public partial class HallListView : UserControl
 {
-    public HallsListView()
+    public HallListView()
     {
         InitializeComponent();
     }
