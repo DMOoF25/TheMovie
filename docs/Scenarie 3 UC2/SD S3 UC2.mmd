@@ -1,12 +1,12 @@
 sequenceDiagram
-    actor Kunde
+   actor Aktør
     participant System
 
-    Kunde->>System: Vælg film, dato, biograf, antal billetter
-    Kunde->>System: Indtast e-mail og telefonnummer
-    Kunde->>System: Tryk "Book billet"
+    Aktør->>System: Vælg film, dato, biograf, antal billetter
+    Aktør->>System: Indtast e-mail og telefonnummer
+    Aktør->>System: Tryk "Book billet"
     alt Booking oprettet
-        System-->>Kunde: Vis bekræftelse (+ evt. e-mail)
+        System-->>Aktør: Vis bekræftelse (+ evt. e-mail)
     else Fejl (fx kapacitet overskredet)
-        System-->>Kunde: Vis fejlmeddelelse og mulighed for at ændre antal billetter
+        System-->>Aktør: Vis fejlmeddelelse og mulighed for at ændre antal billetter
     end
