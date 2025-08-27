@@ -1,17 +1,13 @@
-﻿sequenceDiagram
- title SSD – Scenarie 3 • UC-2: Opret booking
+sequenceDiagram 
+    title SSD - Scenarie 3 UC-2: Opret booking
+   actor Aktør
+    participant System
 
-actor Actor as "Aktor"
-participant System as "System"
-
-Actor->>System: Vaelg film
-Actor->>System: Vaelg dato
-Actor->>System: Vaelg biograf
-Actor->>System: Angiv antal billetter
-Actor->>System: Angiv e-mail og telefon
-
-alt Kapacitet OK
-    System-->>Actor: Bekraeft booking (kvittering / bookingnr.)
-else Antal billetter > salens kapacitet
-    System-->>Actor: Fejl: "Antallet overskrider salens kapacitet"
-end
+    Aktør->>System: Vælg film, dato, biograf, antal billetter
+    Aktør->>System: Indtast e-mail og telefonnummer
+    Aktør->>System: Tryk "Book billet"
+    alt Booking oprettet
+        System-->>Aktør: Vis bekræftelse (+ evt. e-mail)
+    else Fejl (fx kapacitet overskredet)
+        System-->>Aktør: Vis fejlmeddelelse og mulighed for at ændre antal billetter
+    end

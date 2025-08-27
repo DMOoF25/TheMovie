@@ -1,11 +1,11 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
+    actor JensPeter as "Aktør"
     participant UI as "MainView (UI)"
     participant Form as "AddHallForm (UI)"
     participant VM as "AddHallViewModel"
     participant Service as "HallService"
     participant Repo as "HallRepository"
-    participant DB as "Persistens"
+    participant DB as "Infrastructure"
 
     JensPeter->>UI: Clicks "Add New Hall"
     UI->>+Form: Opens AddHallForm

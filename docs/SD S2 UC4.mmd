@@ -1,11 +1,11 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
+    actor JensPeter as "Aktør"
     participant UI as "MainView (UI)"
     participant Form as "AddShowtimeForm (UI)"
     participant VM as "AddShowtimeViewModel"
     participant Service as "ShowtimeService"
     participant Repo as "ShowtimeRepository"
-    participant DB as "Persistens"
+    participant DB as "Infrastructure"
 
     JensPeter->>UI: Clicks "Add New Showtime"
     UI->>+Form: Opens AddShowtimeForm

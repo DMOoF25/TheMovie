@@ -1,14 +1,14 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
-    participant System as "BiografSystem"
+    actor JensPeter as "Aktør"
+    participant System as "System"
 
     JensPeter->>System: Clicks "Add New Director"
     System-->>JensPeter: Displays director form
 
     JensPeter->>System: Submits name, birthYear, nationality
-    System-->>System: Validate input
+    
     alt Valid data
-        System-->>System: Create Director object
+        
         System-->>JensPeter: Confirmation message
     else Invalid data
         System-->>JensPeter: Error message
