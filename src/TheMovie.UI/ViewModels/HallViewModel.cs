@@ -1,21 +1,20 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
-using TheMovie.UI.Commands;
+using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class HallViewModel : INotifyPropertyChanged
+public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
 {
-    private readonly IHallRepository _repository;
     private readonly ICinemaRepository _cinemaRepository;
 
+    // To track current entity in edit mode
     private Guid? _currentId;
 
+    // Form fields
     private string _name = string.Empty;
     public string Name
     {
@@ -28,7 +27,6 @@ public sealed class HallViewModel : INotifyPropertyChanged
             RefreshCommandStates();
         }
     }
-
     private uint _capacity;
     public uint Capacity
     {
@@ -54,63 +52,20 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
 
+    // State fields
     public ObservableCollection<CinemaListItemViewModel> Cinemas { get; private set; } = [];
-
-    public ICommand AddCommand { get; }
-    public ICommand SaveCommand { get; }
-    public ICommand ResetCommand { get; }
-    public ICommand CancelCommand { get; }
-    public ICommand DeleteCommand { get; }
-
-    private string? _error;
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
-    }
-    private bool _isSaving;
-    public bool IsSaving
-    {
-        get => _isSaving;
-        private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommandStates(); }
-    }
-    private bool _isEditMode;
-    public bool IsEditMode
-    {
-        get => _isEditMode;
-        private set
-        {
-            if (_isEditMode == value) return;
-            _isEditMode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsAddMode));
-            RefreshCommandStates();
-        }
-    }
-    public bool IsAddMode => !IsEditMode;
 
     public event EventHandler<Hall>? HallSaved;
 
-    public HallViewModel(IHallRepository? repository = null)
+    public HallViewModel(IHallRepository? repository = null) : base(repository ?? App.HostInstance.Services.GetRequiredService<IHallRepository>())
     {
-        _repository = repository ?? App.HostInstance.Services.GetRequiredService<IHallRepository>();
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
-
-        _ = LoadCinemaOption();
-
-        AddCommand = new RelayCommand(OnAdd, CanAdd);
-        SaveCommand = new RelayCommand(OnSave, CanSave);
-        ResetCommand = new RelayCommand(OnReset, CanReset);
-        CancelCommand = new RelayCommand(OnCancel);
-        DeleteCommand = new RelayCommand(OnDelete, CanDelete);
-
-        IsEditMode = false;
     }
 
 
     #region Load method
     // Populate form from repository by id (enter edit mode)
-    public async Task LoadAsync(Guid id)
+    public override async Task LoadAsync(Guid id)
     {
         try
         {
@@ -153,20 +108,17 @@ public sealed class HallViewModel : INotifyPropertyChanged
     #endregion
 
     #region CanXXX methods
-    private bool CanSubmitCore() =>
+    protected override bool CanSubmitCore() =>
         !IsSaving &&
         !string.IsNullOrWhiteSpace(Name) &&
         SelectedCinemaId.HasValue &&
         Capacity > 0;
 
-    private bool CanAdd() => CanSubmitCore() && IsAddMode;
-    private bool CanSave() => CanSubmitCore() && IsEditMode;
-    private bool CanReset() => IsEditMode && !IsSaving;
-    private bool CanDelete() => IsEditMode && !IsSaving;
-    #endregion
-
-    #region Command Handlers
-    private void OnAdd()
+    //private bool CanAdd() => CanSubmitCore() && IsAddMode;
+    //private bool CanSave() => CanSubmitCore() && IsEditMode;
+    //private bool CanReset() => IsEditMode && !IsSaving;
+    //private bool CanDelete() => IsEditMode && !IsSaving;
+    protected override void OnAdd()
     {
         if (!CanAdd()) return;
         IsSaving = true;
@@ -175,6 +127,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
         try
         {
             _ = _repository.AddAsync(hall);
+            // Raise the Saved event using the base class method or protected accessor
             HallSaved?.Invoke(this, hall);
             MessageBox.Show("Biografsal tilføjet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             OnReset();
@@ -190,7 +143,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
 
-    private void OnSave()
+    protected override void OnSave()
     {
         if (_currentId is null)
         {
@@ -227,12 +180,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
 
-    private void OnCancel()
-    {
-        OnReset();
-    }
-
-    private void OnDelete()
+    protected override void OnDelete()
     {
         if (_currentId is null)
         {
@@ -262,7 +210,7 @@ public sealed class HallViewModel : INotifyPropertyChanged
         }
     }
 
-    private void OnReset()
+    protected override void OnReset()
     {
         if (!CanReset()) return;
         Name = string.Empty;
@@ -274,14 +222,4 @@ public sealed class HallViewModel : INotifyPropertyChanged
 
     #endregion
 
-    private void RefreshCommandStates()
-    {
-        (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (ResetCommand as RelayCommand)?.RaiseCanExecuteChanged();
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

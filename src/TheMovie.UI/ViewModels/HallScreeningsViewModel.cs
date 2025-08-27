@@ -7,9 +7,9 @@ public sealed class HallScreeningsViewModel
     public string CinemaName { get; }
     public string HallName { get; }
     public string Header => $"{CinemaName} — {HallName}";
-    public ObservableCollection<ScreeningsListItemViewModel> Items { get; } = [];
+    public ObservableCollection<ScreeningListItemViewModel> Items { get; } = [];
 
-    public HallScreeningsViewModel(string cinemaName, string hallName, IEnumerable<ScreeningsListItemViewModel> items)
+    public HallScreeningsViewModel(string cinemaName, string hallName, IEnumerable<ScreeningListItemViewModel> items)
     {
         CinemaName = cinemaName;
         HallName = hallName;

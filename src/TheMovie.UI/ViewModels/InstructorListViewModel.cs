@@ -4,9 +4,9 @@ using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class MovieListViewModel : ListViewModelBase<IMovieRepository, MovieListItemViewModel>
+public sealed class InstructorListViewModel : ListViewModelBase<IInstructorRepository, InstructorListItemViewModel>
 {
-    public MovieListViewModel(IMovieRepository repository) : base(repository)
+    public InstructorListViewModel(IInstructorRepository repository) : base(repository)
     {
     }
 
@@ -16,10 +16,10 @@ public sealed class MovieListViewModel : ListViewModelBase<IMovieRepository, Mov
         IsLoading = true;
         try
         {
-            var movies = await _repository.GetAllAsync().ConfigureAwait(true);
+            var instructors = await _repository.GetAllAsync().ConfigureAwait(true);
             Items.Clear();
-            foreach (var m in movies.OrderBy(m => m.Title))
-                Items.Add(new MovieListItemViewModel(m));
+            foreach (var i in instructors.OrderBy(i => i.Name))
+                Items.Add(new InstructorListItemViewModel(i));
         }
         catch (Exception ex)
         {
@@ -31,4 +31,5 @@ public sealed class MovieListViewModel : ListViewModelBase<IMovieRepository, Mov
             (RefreshCommandState as RelayCommand)?.RaiseCanExecuteChanged();
         }
     }
+
 }

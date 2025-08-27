@@ -13,9 +13,14 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
 {
     private readonly ICinemaRepository _repository;
 
+    // To track current entity in edit mode
     private Guid? _currentId;
+
+    // Form fields
     private string _name = string.Empty;
     private string _location = string.Empty;
+
+    // State fields
     private bool _isSaving;
     private string? _error;
     private bool _isEditMode;

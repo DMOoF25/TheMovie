@@ -1,27 +1,28 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
 using TheMovie.UI.Commands;
+using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class BookingViewModel : INotifyPropertyChanged
+public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking>
 {
-    private readonly IBookingRepository _bookingRepository;
+    // To track current entity in edit mode
+    private Guid? _currentId;
+
+    //private readonly IBookingRepository _repository;
     private readonly IScreeningRepository _screeningRepository;
     private readonly IMovieRepository _movieRepository;
     private readonly IHallRepository _hallRepository;
     private readonly ICinemaRepository _cinemaRepository;
 
-    public event EventHandler? CloseRequested;
-
     // Screening context
     public Guid ScreeningId { get; private set; }
     private Screening? _screening;
 
+    // Form fields
     public string CinemaName { get; private set; } = string.Empty;
     public string HallName { get; private set; } = string.Empty;
     public string MovieTitle { get; private set; } = string.Empty;
@@ -34,38 +35,31 @@ public sealed class BookingViewModel : INotifyPropertyChanged
     public string NumberOfSeatsText
     {
         get => _numberOfSeatsText;
-        set { if (_numberOfSeatsText == value) return; _numberOfSeatsText = value; OnPropertyChanged(); RefreshCommands(); }
+        set { if (_numberOfSeatsText == value) return; _numberOfSeatsText = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     private string? _email;
     public string? Email
     {
         get => _email;
-        set { if (_email == value) return; _email = value; OnPropertyChanged(); RefreshCommands(); }
+        set { if (_email == value) return; _email = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     private string? _phoneNumber;
     public string? PhoneNumber
     {
         get => _phoneNumber;
-        set { if (_phoneNumber == value) return; _phoneNumber = value; OnPropertyChanged(); RefreshCommands(); }
-    }
-
-    private string? _error;
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); }
+        set { if (_phoneNumber == value) return; _phoneNumber = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public ICommand IncreaseSeatsCommand { get; }
     public ICommand DecreaseSeatsCommand { get; }
-    public ICommand BookCommand { get; }
-    public ICommand CancelCommand { get; }
 
-    public BookingViewModel(ScreeningsListItemViewModel? selected = default)
+    public event EventHandler? CloseRequested;
+
+    public BookingViewModel(ScreeningListItemViewModel? selected = default)
+        : base(App.HostInstance.Services.GetRequiredService<IBookingRepository>())
     {
-        _bookingRepository = App.HostInstance.Services.GetRequiredService<IBookingRepository>();
         _screeningRepository = App.HostInstance.Services.GetRequiredService<IScreeningRepository>();
         _movieRepository = App.HostInstance.Services.GetRequiredService<IMovieRepository>();
         _hallRepository = App.HostInstance.Services.GetRequiredService<IHallRepository>();
@@ -73,10 +67,13 @@ public sealed class BookingViewModel : INotifyPropertyChanged
 
         IncreaseSeatsCommand = new RelayCommand(() => AdjustSeats(1));
         DecreaseSeatsCommand = new RelayCommand(() => AdjustSeats(-1));
-        BookCommand = new RelayCommand(async () => await OnBookAsync(), CanBook);
-        CancelCommand = new RelayCommand(() => CloseRequested?.Invoke(this, EventArgs.Empty));
 
-        HallCapacity = selected?.GetCapacity() ?? 0;
+        HallCapacity = (selected != null) ? selected.GetCapacity() : 0;
+
+        if (selected != null)
+        {
+            _ = LoadForScreeningAsync(selected.Id);
+        }
     }
 
     private void AdjustSeats(int delta)
@@ -87,6 +84,11 @@ public sealed class BookingViewModel : INotifyPropertyChanged
         if (next > 999) next = 999;
         NumberOfSeatsText = next.ToString();
     }
+
+    #region Load methods
+
+    // Treat id as ScreeningId for this ViewModel
+    public override async Task LoadAsync(Guid id) => await LoadForScreeningAsync(id);
 
     public async Task LoadForScreeningAsync(Guid screeningId)
     {
@@ -110,6 +112,19 @@ public sealed class BookingViewModel : INotifyPropertyChanged
         HallName = hall?.Name ?? "(unknown)";
         CinemaName = cinema?.Name ?? "(unknown)";
         StartDisplay = _screening.StartTime.ToString("dd-MM-yyyy HH:mm");
+        HallCapacity = hall?.Capacity ?? 0;
+
+        // Calculate available seats (hall capacity minus booked seats)
+        try
+        {
+            var bookings = await _repository.GetAllAsync().ConfigureAwait(true);
+            uint booked = (uint)bookings.Where(b => b.ScreeningId == ScreeningId).Sum(b => b.NumberOfSeats);
+            AvailableSeats = (booked >= HallCapacity) ? 0 : (HallCapacity - booked);
+        }
+        catch
+        {
+            AvailableSeats = 0;
+        }
 
         OnPropertyChanged(nameof(MovieTitle));
         OnPropertyChanged(nameof(HallName));
@@ -118,8 +133,10 @@ public sealed class BookingViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(HallCapacity));
         OnPropertyChanged(nameof(AvailableSeats));
 
-        RefreshCommands();
+        RefreshCommandStates();
     }
+
+    #endregion
 
     private bool CanBook()
     {
@@ -141,22 +158,56 @@ public sealed class BookingViewModel : INotifyPropertyChanged
         try
         {
             Error = null;
+            IsSaving = true;
             var booking = new Booking(ScreeningId, seats, Email?.Trim(), PhoneNumber?.Trim());
-            await _bookingRepository.AddAsync(booking).ConfigureAwait(true);
+            await _repository.AddAsync(booking).ConfigureAwait(true);
             CloseRequested?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
             Error = ex.Message;
         }
+        finally
+        {
+            IsSaving = false;
+            RefreshCommandStates();
+        }
     }
 
-    private void RefreshCommands()
+    // Base AddCommand will call this
+    protected override void OnAdd()
     {
-        (BookCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        if (!CanBook())
+        {
+            Error = "Please fill in seats and a contact (email or phone).";
+            return;
+        }
+        _ = OnBookAsync();
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    protected override void OnSave()
+    {
+        // No-op: bookings are only created, not edited
+    }
+
+    protected override void OnDelete()
+    {
+        if (_currentId is null) return;
+
+    }
+
+    protected override void OnReset()
+    {
+        // Reset fields and request close so Cancel behaves as close
+        NumberOfSeatsText = "1";
+        Email = null;
+        PhoneNumber = null;
+        Error = null;
+        CloseRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected override bool CanSubmitCore()
+    {
+        throw new NotImplementedException();
+    }
 }

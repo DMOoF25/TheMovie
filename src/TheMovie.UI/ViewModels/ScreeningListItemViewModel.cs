@@ -4,7 +4,7 @@ using TheMovie.Domain.Entities;
 
 namespace TheMovie.UI.ViewModels;
 
-public class ScreeningsListItemViewModel
+public class ScreeningListItemViewModel
 {
     private static readonly ConcurrentDictionary<Guid, string> _cinameNameCache = new();
     private static readonly ConcurrentDictionary<Guid, string> _hallNameCache = new();
@@ -20,7 +20,7 @@ public class ScreeningsListItemViewModel
     public TimeOnly StartTimeDisplay { get; }
     public TimeOnly EndTimeDisplay { get; }
 
-    public ScreeningsListItemViewModel(Screening screening)
+    public ScreeningListItemViewModel(Screening screening)
     {
         Id = screening.Id;
         DateDisplay = screening.StartTime.ToString("dd/MM/yyyy");
