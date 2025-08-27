@@ -2,12 +2,24 @@ sequenceDiagram
 title SD - Scenarie 3 UC-3: Slet booking
 
    
-    actor Aktør
-    participant System
+    actor Ansat
+    participant BookingUI
+    participant BookingController
+    participant BookingService
+    participant Database
 
-    Ansat->>System: Vælg "Slet booking"
-    alt Booking slettet
-        System-->>Ansat: Bekræftelse på sletning
-    else Fejl (fx ingen adgang eller teknisk fejl)
-        System-->>Ansat: Fejlmeddelelse
+    Ansat->>BookingUI: Vælg booking at slette
+    BookingUI->>BookingController: Send slette-anmodning
+    BookingController->>BookingService: Slet booking
+    BookingService->>Database: Find booking
+    alt Booking findes og adgang OK
+        Database-->>BookingService: Fundet
+        BookingService->>Database: Slet booking
+        Database-->>BookingService: Slettet
+        BookingService-->>BookingController: Bekræftelse
+        BookingController-->>BookingUI: Vis bekræftelse
+    else Fejl (mangler adgang / ikke fundet / systemfejl)
+        Database-->>BookingService: Fejl
+        BookingService-->>BookingController: Fejlmeddelelse
+        BookingController-->>BookingUI: Vis fejlmeddelelse
     end
