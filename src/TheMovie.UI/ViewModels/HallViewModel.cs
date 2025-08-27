@@ -76,7 +76,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
             if (hall is null)
             {
                 Error = "Biografsalen blev ikke fundet.";
-                OnReset();
+                await OnResetAsync();
                 return;
             }
             _currentId = hall.Id;
@@ -115,12 +115,13 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         !string.IsNullOrWhiteSpace(Name) &&
         SelectedCinemaId.HasValue &&
         Capacity > 0;
-
+    #endregion
+    #region Command methods
     //private bool CanAdd() => CanSubmitCore() && IsAddMode;
     //private bool CanSave() => CanSubmitCore() && IsEditMode;
     //private bool CanReset() => IsEditMode && !IsSaving;
     //private bool CanDelete() => IsEditMode && !IsSaving;
-    protected override void OnAdd()
+    protected override async Task OnAddAsync()
     {
         if (!CanAdd()) return;
         IsSaving = true;
@@ -128,11 +129,11 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         var hall = new Hall(Name!, Capacity, SelectedCinemaId!.Value);
         try
         {
-            _ = _repository.AddAsync(hall);
+            await _repository.AddAsync(hall);
             // Raise the Saved event using the base class method or protected accessor
             HallSaved?.Invoke(this, hall);
             MessageBox.Show("Biografsal tilføjet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            OnReset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -145,7 +146,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         }
     }
 
-    protected override void OnSave()
+    protected override async Task OnSaveAsync()
     {
         if (_currentId is null)
         {
@@ -169,7 +170,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
             _ = _repository.UpdateAsync(hall);
             HallSaved?.Invoke(this, hall);
             MessageBox.Show("Biografsal gemt.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            OnReset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -182,7 +183,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         }
     }
 
-    protected override void OnDelete()
+    protected override async Task OnDeleteAsync()
     {
         if (_currentId is null)
         {
@@ -199,7 +200,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         {
             _ = _repository.DeleteAsync(_currentId.Value);
             MessageBox.Show("Movie deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            OnReset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -212,7 +213,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         }
     }
 
-    protected override void OnReset()
+    protected override async Task OnResetAsync()
     {
         if (!CanReset()) return;
         Name = string.Empty;
@@ -220,6 +221,7 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         SelectedCinemaId = null;
         IsEditMode = false;
         Error = null;
+        await Task.CompletedTask;
     }
 
     #endregion

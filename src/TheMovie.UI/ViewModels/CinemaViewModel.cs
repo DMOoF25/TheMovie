@@ -1,18 +1,13 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
-using TheMovie.UI.Commands;
+using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class CinemaViewModel : INotifyPropertyChanged
+public sealed class CinemaViewModel : ViewModelBase<ICinemaRepository, Cinema>
 {
-    private readonly ICinemaRepository _repository;
-
     // To track current entity in edit mode
     private Guid? _currentId;
 
@@ -20,64 +15,30 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
     private string _name = string.Empty;
     private string _location = string.Empty;
 
-    // State fields
-    private bool _isSaving;
-    private string? _error;
-    private bool _isEditMode;
 
     public string Name
     {
         get => _name;
-        set { if (_name == value) return; _name = value; OnPropertyChanged(); RefreshCommands(); }
+        set { if (_name == value) return; _name = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
     public string Location
     {
         get => _location;
-        set { if (_location == value) return; _location = value; OnPropertyChanged(); RefreshCommands(); }
+        set { if (_location == value) return; _location = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-    }
 
-    public bool HasError => !string.IsNullOrEmpty(Error);
-
-    public bool IsSaving
-    {
-        get => _isSaving;
-        private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommands(); }
-    }
-
-    public bool IsEditMode
-    {
-        get => _isEditMode;
-        private set { if (_isEditMode == value) return; _isEditMode = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsAddMode)); RefreshCommands(); }
-    }
-    public bool IsAddMode => !IsEditMode;
-
-    public ICommand AddCommand { get; }
-    public ICommand SaveCommand { get; }
-    public ICommand DeleteCommand { get; }
-    public ICommand ResetCommand { get; }
-    public ICommand CancelCommand { get; }
 
     public event EventHandler<Cinema?>? CinemaSaved;
 
-    public CinemaViewModel()
+    public CinemaViewModel(CinemaListItemViewModel? selected = default) :
+        base(App.HostInstance.Services.GetRequiredService<ICinemaRepository>())
     {
-        _repository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
-        AddCommand = new RelayCommand(OnAdd, CanSubmitAdd);
-        SaveCommand = new RelayCommand(OnSave, CanSubmitSave);
-        DeleteCommand = new RelayCommand(Delete, CanSubmitDelete);
-        ResetCommand = new RelayCommand(Reset, CanReset);
-        CancelCommand = new RelayCommand(Cancel);
-        IsEditMode = false;
+
     }
 
-    public async Task LoadAsync(Guid id)
+    public override async Task LoadAsync(Guid id)
     {
         try
         {
@@ -100,17 +61,12 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool CanSubmitCore() =>
+    protected override bool CanSubmitCore() =>
         !IsSaving
         && !string.IsNullOrWhiteSpace(Name)
         && !string.IsNullOrWhiteSpace(Location);
 
-    private bool CanSubmitAdd() => IsAddMode && CanSubmitCore();
-    private bool CanSubmitSave() => IsEditMode && CanSubmitCore();
-    private bool CanSubmitDelete() => true;
-    private bool CanReset() => !string.IsNullOrEmpty(Name) || !string.IsNullOrEmpty(Location) || IsEditMode;
-
-    private void OnAdd()
+    protected override async Task OnAddAsync()
     {
         Error = null;
         if (!CanSubmitCore()) return;
@@ -119,10 +75,10 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         try
         {
             var cinema = new Cinema(Name.Trim(), Location.Trim());
-            _repository.AddAsync(cinema).GetAwaiter().GetResult();
+            await _repository.AddAsync(cinema);
             CinemaSaved?.Invoke(this, cinema);
             MessageBox.Show("Biograf tilføjet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -135,7 +91,7 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         }
     }
 
-    private void OnSave()
+    protected override async Task OnSaveAsync()
     {
         if (_currentId is null)
         {
@@ -172,19 +128,20 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         {
             IsSaving = false;
         }
+        await OnResetAsync();
     }
 
-    private void Delete()
+    protected override async Task OnDeleteAsync()
     {
         if (_currentId is null) return;
         if (MessageBox.Show("Er du sikker på, at du vil slette denne biograf?", "Bekræft sletning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
         {
             try
             {
-                _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
+                await _repository.DeleteAsync(_currentId.Value);
                 CinemaSaved?.Invoke(this, null);
                 MessageBox.Show("Biograf slettet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                Reset();
+                await OnResetAsync();
             }
             catch (Exception ex)
             {
@@ -194,30 +151,14 @@ public sealed class CinemaViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Reset()
+    protected override async Task OnResetAsync()
     {
         _currentId = null;
         Name = string.Empty;
         Location = string.Empty;
         Error = null;
         IsEditMode = false; // back to add mode
+        await Task.CompletedTask;
     }
 
-    private void Cancel()
-    {
-        Reset();
-        var mainFrame = (System.Windows.Application.Current.MainWindow as MainWindow)?.MainFrame;
-        //mainFrame?.Navigate(new MainPageView());
-    }
-
-    private void RefreshCommands()
-    {
-        (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (ResetCommand as RelayCommand)?.RaiseCanExecuteChanged();
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

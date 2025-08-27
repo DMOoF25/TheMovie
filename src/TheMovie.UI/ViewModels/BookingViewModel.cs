@@ -138,7 +138,8 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
 
     #endregion
 
-    private bool CanBook()
+    #region CanXXX methods
+    protected override bool CanSubmitCore()
     {
         if (ScreeningId == Guid.Empty) return false;
         if (!uint.TryParse(NumberOfSeatsText, out var seats) || seats == 0) return false;
@@ -146,9 +147,17 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(PhoneNumber)) return false;
         return true;
     }
+    #endregion
 
-    private async Task OnBookAsync()
+    #region Commands
+    // Base AddCommand will call this
+    protected override async Task OnAddAsync()
     {
+        if (!CanSubmitCore())
+        {
+            Error = "Please fill in seats and a contact (email or phone).";
+            return;
+        }
         if (!uint.TryParse(NumberOfSeatsText, out var seats) || seats == 0)
         {
             Error = "Enter a valid number of seats.";
@@ -174,40 +183,30 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         }
     }
 
-    // Base AddCommand will call this
-    protected override void OnAdd()
-    {
-        if (!CanBook())
-        {
-            Error = "Please fill in seats and a contact (email or phone).";
-            return;
-        }
-        _ = OnBookAsync();
-    }
-
-    protected override void OnSave()
-    {
-        // No-op: bookings are only created, not edited
-    }
-
-    protected override void OnDelete()
+    protected override async Task OnSaveAsync()
     {
         if (_currentId is null) return;
 
+
+        await Task.CompletedTask;
     }
 
-    protected override void OnReset()
+    protected override async Task OnDeleteAsync()
     {
-        // Reset fields and request close so Cancel behaves as close
+        if (_currentId is null) return;
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnResetAsync()
+    {
+        // OnResetAsync fields and request close so Cancel behaves as close
         NumberOfSeatsText = "1";
         Email = null;
         PhoneNumber = null;
         Error = null;
         CloseRequested?.Invoke(this, EventArgs.Empty);
+        await Task.CompletedTask;
     }
+    #endregion
 
-    protected override bool CanSubmitCore()
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -300,7 +300,7 @@ public class ScreeningViewModel : INotifyPropertyChanged
         {
             await _repository.AddAsync(screening);
             ScreeningSaved?.Invoke(this, screening);
-            // Reset back to add mode
+            // OnResetAsync back to add mode
             IsEditMode = false;
             SelectedHallId = null;
             SelectedMovieId = null;

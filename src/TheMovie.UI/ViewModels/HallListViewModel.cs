@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using TheMovie.Application.Abstractions;
+﻿using TheMovie.Application.Abstractions;
 using TheMovie.UI.Commands;
 using TheMovie.UI.ViewModels.Abstractions;
 
@@ -7,8 +6,6 @@ namespace TheMovie.UI.ViewModels;
 
 public class HallListViewModel : ListViewModelBase<IHallRepository, HallListItemViewModel>
 {
-    public ObservableCollection<HallListItemViewModel> Items { get; } = [];
-
     public HallListViewModel(IHallRepository repository) : base(repository)
     {
     }
