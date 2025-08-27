@@ -2,7 +2,7 @@ sequenceDiagram
 title SD - Scenarie 3 UC-3: Slet booking
 
    
-    actor Ansat
+  actor Ansat
     participant BookingUI
     participant BookingController
     participant BookingService
@@ -18,8 +18,10 @@ title SD - Scenarie 3 UC-3: Slet booking
         Database-->>BookingService: Slettet
         BookingService-->>BookingController: Bekræftelse
         BookingController-->>BookingUI: Vis bekræftelse
+        BookingUI-->>Ansat: Bekræftelse på sletning
     else Fejl (mangler adgang / ikke fundet / systemfejl)
         Database-->>BookingService: Fejl
         BookingService-->>BookingController: Fejlmeddelelse
         BookingController-->>BookingUI: Vis fejlmeddelelse
+        BookingUI-->>Ansat: Fejlmeddelelse
     end
