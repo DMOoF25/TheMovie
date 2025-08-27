@@ -2,13 +2,13 @@
 title SSD – Scenarie 3 UC-4: Rediger booking
 
 
-    actor Ansat
+    actor Aktør
     participant System
 
-    Ansat->>System: Vælg "Rediger booking"
-    Ansat->>System: Indtast ændringer
+    Aktør->>System: Vælg "Rediger booking"
+    Aktør->>System: Indtast ændringer
     alt Booking opdateret
-        System-->>Ansat: Bekræftelse på ændring
+        System-->>Aktør: Bekræftelse på ændring
     else Fejl (fx kapacitet overskredet eller teknisk fejl)
-        System-->>Ansat: Fejlmeddelelse
+        System-->>Aktør: Fejlmeddelelse
     end
