@@ -1,14 +1,15 @@
 ﻿sequenceDiagram
-title SD – Scenarie 3 • UC-4: Rediger booking
+title SD – Scenarie 3 UC-4: Rediger booking
 
 
-  actor Ansat
+  
+    actor Aktør
     participant BookingUI
     participant BookingController
     participant BookingService
     participant Database
 
-    Ansat->>BookingUI: Indtast ændringer til booking
+    Aktør->>BookingUI: Indtast ændringer til booking
     BookingUI->>BookingController: Send ændringer
     BookingController->>BookingService: Opdater booking
     BookingService->>Database: Tjek kapacitet
@@ -18,10 +19,11 @@ title SD – Scenarie 3 • UC-4: Rediger booking
         Database-->>BookingService: Bekræftet
         BookingService-->>BookingController: Bekræftelse
         BookingController-->>BookingUI: Vis bekræftelse
-        BookingUI-->>Ansat: Bekræftelse på ændring
+        BookingUI-->>Aktør: Bekræftelse på ændring
     else Kapacitet overskredet / systemfejl
         Database-->>BookingService: Fejl
         BookingService-->>BookingController: Fejlmeddelelse
         BookingController-->>BookingUI: Vis fejlmeddelelse
-        BookingUI-->>Ansat: Fejlmeddelelse
+        BookingUI-->>Aktør: Fejlmeddelelse
     end
+
