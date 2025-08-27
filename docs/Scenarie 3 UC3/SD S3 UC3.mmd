@@ -7,7 +7,7 @@ title SD - Scenarie 3 UC-3: Slet booking
     participant Repo as "BookingRepository"
     participant Store as "PersistentStorage"
 
-    Actor->>UI: Vælg booking at slette
+    Actor-->>UI: Vælg booking at slette
     UI->>+Controller: DeleteBooking(bookingId)
     Controller->>+Repo: FindBooking(bookingId)
     Repo-->>-Controller: Return booking
