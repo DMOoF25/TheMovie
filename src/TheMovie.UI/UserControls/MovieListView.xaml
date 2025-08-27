@@ -28,8 +28,8 @@
                 </Grid.RowDefinitions>
 
                 <!-- Bind to Movies collection on MoviesListViewModel -->
-                <ListView ItemsSource="{Binding Movies}"
-                        SelectedItem="{Binding SelectedMovie, Mode=TwoWay}"
+                <ListView ItemsSource="{Binding Items}"
+                        SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.CanContentScroll="True"
@@ -54,7 +54,7 @@
                            Visibility="{Binding Error, Converter={StaticResource NullToVisibilityConverter}}"/>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
-                    <Button Content="Opdater" Width="80" Command="{Binding RefreshCommand}" />
+                    <Button Content="Opdater" Width="80" Command="{Binding RefreshCommandState}" />
                     <TextBlock Text="Henter..." Margin="8 0 0 0" Foreground="#555"
                                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
