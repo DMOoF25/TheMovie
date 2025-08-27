@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.UI.ViewModels;
@@ -10,14 +11,24 @@ namespace TheMovie.UI.Views
     /// </summary>
     public partial class EditBookingWindow : Window
     {
+        private BookingListViewModel? _listVm;
+        private BookingViewModel? _vm;
+
         public EditBookingWindow()
         {
             InitializeComponent();
 
             var vm = App.HostInstance.Services.GetService<BookingViewModel>() ?? new BookingViewModel();
+            _vm = vm;
             DataContext = vm;
 
-            vm.CloseRequested += (_, __) => Close();
+            _listVm = App.HostInstance.Services.GetRequiredService<BookingListViewModel>();
+
+            // Populate form when a movie is selected in the list
+            if (_listVm is not null)
+                _listVm.PropertyChanged += ListVm_PropertyChanged;
+
+            _vm.CloseRequested += (_, __) => Close();
 
             Loaded += async (_, __) =>
             {
@@ -29,6 +40,16 @@ namespace TheMovie.UI.Views
                 else if (Tag is string s && Guid.TryParse(s, out var g2))
                     await bvm.LoadForScreeningAsync(g2);
             };
+        }
+
+        private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(BookingListViewModel.SelectedItem)
+                && _listVm?.SelectedItem is { } item
+                && _vm is not null)
+            {
+                await _vm.LoadAsync(item.Id);
+            }
         }
 
         private static readonly Regex Digits = new("^[0-9]+$");
