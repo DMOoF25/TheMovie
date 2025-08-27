@@ -7,7 +7,7 @@ namespace TheMovie.UI.ViewModels;
 
 public class HallListViewModel : ListViewModelBase<IHallRepository, HallListItemViewModel>
 {
-    public ObservableCollection<HallListItemViewModel> Irems { get; } = [];
+    public ObservableCollection<HallListItemViewModel> Items { get; } = [];
 
     public HallListViewModel(IHallRepository repository) : base(repository)
     {
@@ -20,9 +20,9 @@ public class HallListViewModel : ListViewModelBase<IHallRepository, HallListItem
         try
         {
             var halls = await _repository.GetAllAsync().ConfigureAwait(true);
-            Irems.Clear();
+            Items.Clear();
             foreach (var m in halls.OrderBy(m => m.Name))
-                Irems.Add(new HallListItemViewModel(m));
+                Items.Add(new HallListItemViewModel(m));
         }
         catch (Exception ex)
         {
@@ -34,5 +34,4 @@ public class HallListViewModel : ListViewModelBase<IHallRepository, HallListItem
             (RefreshCommandState as RelayCommand)?.RaiseCanExecuteChanged();
         }
     }
-
 }
