@@ -1,11 +1,24 @@
 ﻿sequenceDiagram
 title SSD – Scenarie 3: UC-3: Slet booking
 
-actor Actor as "Aktor"
-participant System as "System"
+actor Aktør
+    participant BookingUI
+    participant BookingController
+    participant BookingService
+    participant Database
 
-Actor->>System: Vaelg booking at slette
-System-->>Actor: Bekraeft sletning
-
-alt Sletning mislykkes
-    System-->>Actor: Fejl: "Booking kunne ikke slettes"
+    Ansat->>BookingUI: Vælg booking at slette
+    BookingUI->>BookingController: Send slette-anmodning
+    BookingController->>BookingService: Slet booking
+    BookingService->>Database: Find booking
+    alt Booking findes og adgang OK
+        Database-->>BookingService: Fundet
+        BookingService->>Database: Slet booking
+        Database-->>BookingService: Slettet
+        BookingService-->>BookingController: Bekræftelse
+        BookingController-->>BookingUI: Vis bekræftelse
+    else Fejl (mangler adgang / ikke fundet / systemfejl)
+        Database-->>BookingService: Fejl
+        BookingService-->>BookingController: Fejlmeddelelse
+        BookingController-->>BookingUI: Vis fejlmeddelelse
+    end
