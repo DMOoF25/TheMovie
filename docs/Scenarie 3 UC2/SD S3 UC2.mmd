@@ -5,6 +5,8 @@ sequenceDiagram
     Kunde->>System: Vælg film, dato, biograf, antal billetter
     Kunde->>System: Indtast e-mail og telefonnummer
     Kunde->>System: Tryk "Book billet"
-    System->>System: Valider kapacitet
-    System->>System: Gem booking i database
-    System-->>Kunde: Vis bekræftelse (+ evt. send e-mail)
+    alt Booking oprettet
+        System-->>Kunde: Vis bekræftelse (+ evt. e-mail)
+    else Fejl (fx kapacitet overskredet)
+        System-->>Kunde: Vis fejlmeddelelse og mulighed for at ændre antal billetter
+    end
