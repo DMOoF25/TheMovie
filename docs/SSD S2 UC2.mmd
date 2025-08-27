@@ -1,14 +1,14 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
-    participant System as "BiografSystem"
+    actor JensPeter as "Aktør"
+    participant System as "System"
 
     JensPeter->>System: Clicks "Add New Hall"
     System-->>JensPeter: Displays hall form
 
     JensPeter->>System: Submits hallName, capacity, cinemaID
-    System-->>System: Validate input
+    
     alt Valid data
-        System-->>System: Create Hall object
+        
         System-->>JensPeter: Confirmation message
     else Invalid data
         System-->>JensPeter: Error message

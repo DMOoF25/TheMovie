@@ -1,26 +1,27 @@
-﻿sequenceDiagram
-title SD – Scenarie 3 • UC-3: Slet booking
+sequenceDiagram
+title SD - Scenarie 3 UC-3: Slet booking
 
-actor Actor as "Aktor"
-participant UI as "BookingUI"
-participant Controller as "BookingController"
-participant Repo as "BookingRepository"
-participant Store as "PersistentStorage"
+   
+      actor Aktør
+    participant BookingUI
+    participant BookingController
+    participant BookingService
+    participant Database
 
-Actor->>UI: Vælg booking at slette
-UI->>+Controller: DeleteBooking(bookingId)
-
-Controller->>+Repo: FindBooking(bookingId)
-Repo-->>-Controller: Return booking
-
-Controller->>+Store: Delete(booking)
-alt Sletning OK
-    Store-->>-Controller: Success
-    Controller-->>UI: Bekraeft sletning
-    UI-->>Actor: Vis kvittering
-else Fejl ved sletning
-    Store-->>Controller: Error
-    Controller-->>UI: Fejl: "Booking kunne ikke slettes"
-    UI-->>Actor: Informer fejl
-end
-ikke slettes"
+    Aktør->>BookingUI: Vælg booking at slette
+    BookingUI->>BookingController: Send slette-anmodning
+    BookingController->>BookingService: Slet booking
+    BookingService->>Database: Find booking
+    alt Booking findes og adgang OK
+        Database-->>BookingService: Fundet
+        BookingService->>Database: Slet booking
+        Database-->>BookingService: Slettet
+        BookingService-->>BookingController: Bekræftelse
+        BookingController-->>BookingUI: Vis bekræftelse
+        BookingUI-->>Aktør: Bekræftelse på sletning
+    else Fejl (mangler adgang / ikke fundet / systemfejl)
+        Database-->>BookingService: Fejl
+        BookingService-->>BookingController: Fejlmeddelelse
+        BookingController-->>BookingUI: Vis fejlmeddelelse
+        BookingUI-->>Aktør: Fejlmeddelelse
+    end

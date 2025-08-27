@@ -1,11 +1,11 @@
 ﻿sequenceDiagram
-    actor JensPeter as "Jens Peter"
+    actor JensPeter as "Aktør"
     participant UI as "MainView (UI)"
     participant Form as "EditMovieForm (UI)"
     participant VM as "EditMovieViewModel"
     participant Service as "MovieService"
     participant Repo as "MovieRepository"
-    participant DB as "Persistens"
+    participant DB as "Infrastructure"
 
     JensPeter->>UI: Clicks "Edit Movie"
     UI->>+Form: Opens EditMovieForm with current movie data
