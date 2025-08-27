@@ -55,6 +55,11 @@ public partial class App : System.Windows.Application
                 services.AddTransient<ScreeningViewModel>();
                 services.AddTransient<EditScreeningView>();
 
+                // Bookings
+                services.AddTransient<BookingsListViewModel>();
+                services.AddTransient<BookingViewModel>();
+                services.AddTransient<EditBookingWindow>();
+
                 services.AddSingleton<MainWindow>();
             })
             .Build();

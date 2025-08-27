@@ -43,7 +43,7 @@ public class HallRepositoryTests
     [TestMethod]
     public async Task AddAsync_PersistsSingleHall()
     {
-        var hall = new Hall("Main Hall", Guid.NewGuid()) { };
+        var hall = new Hall("Main Hall", 20, Guid.NewGuid()) { };
         await _repo.AddAsync(hall);
         var all = (await _repo.GetAllAsync()).ToList();
         Assert.AreEqual(1, all.Count);
@@ -61,9 +61,9 @@ public class HallRepositoryTests
     {
         var halls = new List<Hall>
         {
-            new("Hall 1", Guid.NewGuid()) { },
-            new("Hall 2", Guid.NewGuid()) { },
-            new("Hall 3", Guid.NewGuid()) { }
+            new("Hall 1", 20, Guid.NewGuid()) { },
+            new("Hall 2", 25, Guid.NewGuid()) { },
+            new("Hall 3", 50, Guid.NewGuid()) { }
         };
         await _repo.AddRangeAsync(halls);
         var all = (await _repo.GetAllAsync()).ToList();
@@ -78,8 +78,8 @@ public class HallRepositoryTests
     [TestMethod]
     public async Task GetAllAsync_ReturnsAllHalls()
     {
-        var hall1 = new Hall("Hall 1", Guid.NewGuid()) { };
-        var hall2 = new Hall("Hall 2", Guid.NewGuid()) { };
+        var hall1 = new Hall("Hall 1", 35, Guid.NewGuid()) { };
+        var hall2 = new Hall("Hall 2", 20, Guid.NewGuid()) { };
         await _repo.AddAsync(hall1);
         await _repo.AddAsync(hall2);
         var all = (await _repo.GetAllAsync()).ToList();
@@ -91,7 +91,7 @@ public class HallRepositoryTests
     [TestMethod]
     public async Task GetByIdAsync_ReturnsCorrectHall()
     {
-        var hall = new Hall("Specific Hall", Guid.NewGuid()) { };
+        var hall = new Hall("Specific Hall", 22, Guid.NewGuid()) { };
         await _repo.AddAsync(hall);
         var retrieved = await _repo.GetByIdAsync(hall.Id);
         Assert.IsNotNull(retrieved);
@@ -104,7 +104,7 @@ public class HallRepositoryTests
     [TestMethod]
     public async Task UpdateAsync_ModifiesAndPersists()
     {
-        var hall = new Hall("Main Hall", Guid.NewGuid()) { };
+        var hall = new Hall("Main Hall", 32, Guid.NewGuid()) { };
         await _repo.AddAsync(hall);
         hall.Name = "Updated Hall";
         await _repo.UpdateAsync(hall);
@@ -123,7 +123,7 @@ public class HallRepositoryTests
     [TestMethod]
     public async Task DeleteAsync_RemovesHall()
     {
-        var hall = new Hall("Hall to Delete", Guid.NewGuid()) { };
+        var hall = new Hall("Hall to Delete", 36, Guid.NewGuid()) { };
         await _repo.AddAsync(hall);
         await _repo.DeleteAsync(hall.Id);
         var all = (await _repo.GetAllAsync()).ToList();

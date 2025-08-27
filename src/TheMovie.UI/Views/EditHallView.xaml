@@ -34,6 +34,13 @@
                      MaxHeight="20"
                      MinWidth="250"
                      Margin="0,0,0,6"/>
+            <TextBlock Text="Kapacitet:" 
+                       VerticalAlignment="Top" 
+                       Margin="0,0,8,0"/>
+            <TextBox Text="{Binding Capacity, UpdateSourceTrigger=PropertyChanged}"
+                        MaxHeight="20"
+                        MinWidth="100"
+                        Margin="0,0,0,6"/>
         </StackPanel>
         <TextBlock
                     Text="{Binding Error}"

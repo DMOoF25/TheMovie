@@ -38,6 +38,7 @@
                         <GridView>
                             <GridViewColumn Header="Biograf" Width="250" DisplayMemberBinding="{Binding CinemaNameDisplay}"/>
                             <GridViewColumn Header="Biografsal" Width="250" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Kapacitet" Width="100" DisplayMemberBinding="{Binding Capacity}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>

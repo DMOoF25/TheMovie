@@ -10,23 +10,23 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     protected readonly SemaphoreSlim _ioLock = new(1, 1);
 
     /// <summary>
-    /// Fully-qualified path to the CSV persistence file for this entity type.
+    /// Fully-qualified path to the CSV persistence file for this item type.
     /// Format: <c>%LOCALAPPDATA%\TheMovie\{entityname}s.csv</c>.
     /// </summary>
     protected string _filePath;
 
     /// <summary>
-    /// In-memory concurrent store keyed by entity <see cref="Guid"/>.
+    /// In-memory concurrent store keyed by item <see cref="Guid"/>.
     /// </summary>
     private readonly ConcurrentDictionary<Guid, TEntity> _store = new();
 
     /// <summary>
-    /// Delegate used to retrieve the <see cref="Guid"/> identifier from an entity instance.
+    /// Delegate used to retrieve the <see cref="Guid"/> identifier from an item instance.
     /// </summary>
     private readonly Func<TEntity, Guid> _getId;
 
     /// <summary>
-    /// Delegate used to assign a new <see cref="Guid"/> identifier to an entity instance (optional).
+    /// Delegate used to assign a new <see cref="Guid"/> identifier to an item instance (optional).
     /// </summary>
     private readonly Action<TEntity, Guid>? _setId;
 
@@ -36,8 +36,8 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     /// reflects over <typeparamref name="TEntity"/> to locate a public mutable <c>Guid Id</c> property.
     /// Also ensures the target directory exists and immediately attempts to load existing CSV data.
     /// </summary>
-    /// <param name="idSelector">Function that extracts the <see cref="Guid"/> identifier from an entity.</param>
-    /// <param name="idSetter">Action that can assign a new <see cref="Guid"/> to an entity.</param>
+    /// <param name="idSelector">Function that extracts the <see cref="Guid"/> identifier from an item.</param>
+    /// <param name="idSetter">Action that can assign a new <see cref="Guid"/> to an item.</param>
     /// <exception cref="InvalidOperationException">
     /// Thrown when no <paramref name="idSelector"/> is provided and no suitable <c>Id</c> property is found.
     /// </exception>
@@ -78,40 +78,40 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     #region CRUD Operations
 
     /// <summary>
-    /// Adds a new entity to the repository. If the entity's identifier is empty and
+    /// Adds a new item to the repository. If the item's identifier is empty and
     /// a setter is available, a new <see cref="Guid"/> is generated and assigned.
     /// Persists the repository state to the CSV file after insertion.
     /// </summary>
-    /// <param name="entity">The entity instance to add.</param>
+    /// <param name="item">The item instance to add.</param>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the entity has an empty Id and no setter delegate is available.
+    /// Thrown if the item has an empty Id and no setter delegate is available.
     /// </exception>
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task AddAsync(TEntity item, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var id = _getId(entity);
+        var id = _getId(item);
         if (id == Guid.Empty)
         {
             if (_setId is null)
                 throw new InvalidOperationException("Entity Id is empty and no Id setter available.");
             id = Guid.NewGuid();
-            _setId(entity, id);
+            _setId(item, id);
         }
 
-        _store[id] = entity;
+        _store[id] = item;
         await SaveToCvsAsync(_filePath, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Adds multiple entities to the repository sequentially, invoking <see cref="AddAsync(TEntity, CancellationToken)"/> for each.
+    /// Adds multiple items to the repository sequentially, invoking <see cref="AddAsync(TEntity, CancellationToken)"/> for each.
     /// </summary>
-    /// <param name="entities">Collection of entities to add.</param>
+    /// <param name="items">Collection of items to add.</param>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async Task AddRangeAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default)
     {
-        foreach (var e in entities)
+        foreach (var e in items)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await AddAsync(e, cancellationToken).ConfigureAwait(false);
@@ -119,11 +119,11 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     }
 
     /// <summary>
-    /// Retrieves an entity by its identifier.
+    /// Retrieves an item by its identifier.
     /// </summary>
     /// <param name="id">Entity identifier to locate.</param>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
-    /// <returns>The entity if present; otherwise <c>null</c>.</returns>
+    /// <returns>The item if present; otherwise <c>null</c>.</returns>
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -132,10 +132,10 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     }
 
     /// <summary>
-    /// Returns a snapshot enumeration of all entities currently stored.
+    /// Returns a snapshot enumeration of all items currently stored.
     /// </summary>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
-    /// <returns>Snapshot list of all entities.</returns>
+    /// <returns>Snapshot list of all items.</returns>
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -144,32 +144,32 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     }
 
     /// <summary>
-    /// Updates an existing entity. The entity's identifier must be non-empty and already exist in the store.
+    /// Updates an existing item. The item's identifier must be non-empty and already exist in the store.
     /// Persists the updated state to the CSV file afterward.
     /// </summary>
-    /// <param name="entity">Entity instance containing updated values.</param>
+    /// <param name="item">Entity instance containing updated values.</param>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
-    /// <exception cref="InvalidOperationException">Thrown if the entity's Id is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown if no entity with the given Id exists.</exception>
-    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    /// <exception cref="InvalidOperationException">Thrown if the item's Id is empty.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown if no item with the given Id exists.</exception>
+    public async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var id = _getId(entity);
+        var id = _getId(item);
         if (id == Guid.Empty)
-            throw new InvalidOperationException("Cannot update entity with empty Id.");
+            throw new InvalidOperationException("Cannot update item with empty Id.");
 
         if (!_store.ContainsKey(id))
             throw new KeyNotFoundException($"Entity {typeof(TEntity).Name} with Id '{id}' not found.");
 
-        _store[id] = entity;
+        _store[id] = item;
         await SaveToCvsAsync(_filePath, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Removes an entity by its identifier if present and persists the modified state.
+    /// Removes an item by its identifier if present and persists the modified state.
     /// </summary>
-    /// <param name="id">Identifier of the entity to remove.</param>
+    /// <param name="id">Identifier of the item to remove.</param>
     /// <param name="cancellationToken">Token to observe for cancellation.</param>
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -237,17 +237,17 @@ public abstract class RepositoryBase<TEntity> : IRepositoryBase<TEntity>
     #endregion
 
     /// <summary>
-    /// Provides derived classes with read-only access to the current entity collection.
+    /// Provides derived classes with read-only access to the current item collection.
     /// </summary>
     protected IReadOnlyCollection<TEntity> Items => (IReadOnlyCollection<TEntity>)_store.Values;
 
     /// <summary>
-    /// Inserts or replaces an entity in the in-memory store without triggering persistence.
+    /// Inserts or replaces an item in the in-memory store without triggering persistence.
     /// Generates a new identifier if the current one is empty and a setter is available.
     /// </summary>
     /// <param name="entity">Entity to upsert.</param>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the entity identifier is empty and no setter delegate is provided.
+    /// Thrown if the item identifier is empty and no setter delegate is provided.
     /// </exception>
     protected void UpsertInMemory(TEntity entity)
     {

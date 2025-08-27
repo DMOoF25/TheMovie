@@ -23,15 +23,20 @@ public class HallRepository : RepositoryBase<Hall>, IHallRepository
                 using var reader = new StreamReader(fs, Encoding.UTF8);
                 string? line;
                 var loaded = 0;
+                string name;
+                uint capacity;
                 while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var parts = line.Split(',');
-                    if (parts.Length < 3) continue;
+                    var i = 0;
+                    //if (parts.Length < 4) continue;
                     if (!Guid.TryParse(parts[0], out var id)) continue;
-                    if (string.IsNullOrWhiteSpace(parts[1])) continue;
-                    if (!Guid.TryParse(parts[2], out var cinemaId)) continue;
-                    var hall = new Hall { Id = id, Name = parts[1], CinemaId = cinemaId };
+                    if (string.IsNullOrWhiteSpace(parts[++i])) continue;
+                    else name = parts[i];
+                    if (!uint.TryParse(parts[++i], out capacity)) continue;
+                    if (!Guid.TryParse(parts[++i], out var cinemaId)) continue;
+                    var hall = new Hall { Id = id, Name = name, CinemaId = cinemaId, Capacity = capacity };
                     UpsertInMemory(hall);
                     loaded++;
                 }
@@ -58,7 +63,7 @@ public class HallRepository : RepositoryBase<Hall>, IHallRepository
                 {
                     foreach (var hall in Items)
                     {
-                        var line = $"{hall.Id},{hall.Name},{hall.CinemaId}";
+                        var line = $"{hall.Id},{hall.Name}, {hall.Capacity},{hall.CinemaId}";
                         await writer.WriteLineAsync(line).ConfigureAwait(false);
                     }
                 }

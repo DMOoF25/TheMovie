@@ -11,6 +11,7 @@ public class HallListItemViewModel
 
     public Guid Id { get; }
     public string Name { get; }
+    public uint Capacity { get; }
     public Guid CinemaId { get; }
     public string CinemaNameDisplay { get; } = string.Empty;
 
@@ -18,6 +19,7 @@ public class HallListItemViewModel
     {
         Id = hall.Id;
         Name = hall.Name;
+        Capacity = hall.Capacity;
         CinemaId = hall.CinemaId;
 
         // Resolve cinema name (cached lookups to avoid repeated repository calls)

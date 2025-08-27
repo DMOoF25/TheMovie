@@ -1,0 +1,63 @@
+﻿<Window x:Class="TheMovie.UI.Views.EditBookingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:viewmodels="clr-namespace:TheMovie.UI.ViewModels" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        Title="Booking" Height="360" Width="520" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="12">
+            <TextBlock Text="Reserver pladser" FontSize="18" FontWeight="Bold" Margin="0,0,0,12"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="Cinema: " FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding CinemaName}"/>
+                <TextBlock Text="Hall: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                <TextBlock Text="{Binding HallName}"/>
+                <TextBlock Text="Capacity: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                <TextBlock Text="{Binding HallCapacity}"/>
+                <TextBlock Text="Available: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                <TextBlock Text="{Binding AvailableSeats}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                <TextBlock Text="Movie: " FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding MovieTitle}"/>
+                <TextBlock Text="   Start: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                <TextBlock Text="{Binding StartDisplay}"/>
+            </StackPanel>
+            <Separator Margin="0,0,0,12"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="Vælg antal pladser:" FontWeight="SemiBold"/>
+                <Button Content="−" Width="28" Margin="0,0,6,0"
+                            Command="{Binding DecreaseSeatsCommand}"/>
+                <TextBox Width="80"
+                             Text="{Binding NumberOfSeatsText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             PreviewTextInput="NumberOnly_PreviewTextInput"
+                             HorizontalContentAlignment="Center"/>
+                <Button Content="+" Width="28" Margin="6,0,0,0"
+                            Command="{Binding IncreaseSeatsCommand}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Email" Margin="0 0 6 0"/>
+                <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Width="120"
+                             Margin="0 0 6 0"/>
+
+                <TextBlock Text="Telefonnummer" VerticalAlignment="Center" Margin="0 0 6 0"/>
+                <TextBox 
+                        Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                     
+                        Width="120"
+                        Margin="0 0 6 0"/>
+            </StackPanel>
+            <TextBlock Text="{Binding Error}" Foreground="Tomato" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Reserver" Padding="12,6" Margin="0,0,8,0"
+                    Command="{Binding BookCommand}"/>
+                <Button Content="Fortryd" Padding="12,6"
+                    Command="{Binding CancelCommand}"/>
+            </StackPanel>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

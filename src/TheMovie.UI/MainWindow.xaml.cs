@@ -14,7 +14,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         // Navigate to the front page on startup
-        //MainFrame.Navigate(new MainPageView());
+        MainFrame.Navigate(new MainPageView());
     }
 
     #region Menu bar

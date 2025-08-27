@@ -16,4 +16,9 @@
         <ProjectReference Include="..\TheMovie.Application\TheMovie.Application.csproj" />
     </ItemGroup>
 
+
+    <ItemGroup>
+      <Folder Include="Properties\" />
+    </ItemGroup>
+
 </Project>

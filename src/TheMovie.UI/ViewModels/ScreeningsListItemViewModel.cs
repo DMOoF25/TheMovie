@@ -114,4 +114,22 @@ public class ScreeningsListItemViewModel
             CinemaNameDisplay = string.Empty;
         }
     }
+
+    public uint GetCapacity()
+    {
+        try
+        {
+            if (Id == Guid.Empty) return 0;
+            var screeningRepo = App.HostInstance.Services.GetRequiredService<Application.Abstractions.IScreeningRepository>();
+            var screening = screeningRepo.GetByIdAsync(Id).GetAwaiter().GetResult();
+            if (screening is null || screening.HallId == Guid.Empty) return 0;
+            var hallRepo = App.HostInstance.Services.GetRequiredService<Application.Abstractions.IHallRepository>();
+            var hall = hallRepo.GetByIdAsync(screening.HallId).GetAwaiter().GetResult();
+            return hall?.Capacity ?? 0;
+        }
+        catch
+        {
+            throw new Exception("Hall capacity not found");
+        }
+    }
 }

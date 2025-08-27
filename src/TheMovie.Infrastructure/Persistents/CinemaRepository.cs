@@ -10,6 +10,12 @@ public class CinemaRepository : RepositoryBase<Cinema>, ICinemaRepository
     {
     }
 
+    public async Task<string> GetCinemaNameAsync(Guid cinemaId)
+    {
+        var cinema = await GetByIdAsync(cinemaId).ConfigureAwait(false);
+        return cinema?.Name ?? "Unknown Cinema";
+    }
+
     protected override async Task LoadFromCvsAsync(string filePath, CancellationToken cancellationToken = default)
     {
         await _ioLock.WaitAsync(cancellationToken).ConfigureAwait(false);

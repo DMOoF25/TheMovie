@@ -26,10 +26,14 @@ public class Hall
     /// </remarks>
     public string Name { get; set; } = string.Empty;
 
+    public uint Capacity { get; set; } = 0;
+
     /// <summary>
     /// Identifier of the cinema (parent aggregate) to which this hall belongs.
     /// </summary>
     public Guid CinemaId { get; set; }
+
+
 
     /// <summary>
     /// Initializes a new instance of <see cref="Hall"/>.
@@ -37,7 +41,10 @@ public class Hall
     /// <remarks>
     /// Intended for serialization / ORM usage. Prefer the parameterized constructor for new entities.
     /// </remarks>
-    public Hall() { }
+    public Hall()
+    {
+        //Id = Guid.NewGuid();
+    }
 
     /// <summary>
     /// Initializes a new instance of <see cref="Hall"/> with the specified attributes.
@@ -49,10 +56,11 @@ public class Hall
     /// Generates a new <see cref="Guid"/> for <see cref="Id"/>. Does not perform validation;
     /// caller is responsible for ensuring correct values.
     /// </remarks>
-    public Hall(string name, Guid cinemaId)
+    public Hall(string name, uint capacity, Guid cinemaId)
     {
         Id = Guid.NewGuid();
         Name = name;
+        Capacity = capacity;
         CinemaId = cinemaId;
     }
 }
