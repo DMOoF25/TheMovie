@@ -1,34 +1,25 @@
 ﻿sequenceDiagram
 title SD – Scenarie 3 • UC-4: Rediger booking
 
-actor Actor as "Aktor"
-participant UI as "BookingUI"
-participant Controller as "BookingController"
-participant Repo as "BookingRepository"
-participant Booking as "BookingService"
-participant Store as "PersistentStorage"
+sequenceDiagram
+    actor Ansat
+    participant BookingUI
+    participant BookingController
+    participant BookingService
+    participant Database
 
-Actor->>UI: Vaelg booking at redigere
-UI->>+Controller: EditBooking(bookingId, newTickets)
-
-Controller->>+Repo: FindBooking(bookingId)
-Repo-->>-Controller: Return booking
-
-Controller->>+Booking: ValidateCapacity(booking, newTickets)
-alt Kapacitet OK
-    Booking-->>Controller: Valid
-    Controller->>+Store: UpdateBooking(bookingId, newTickets)
-    alt Gemning OK
-        Store-->>-Controller: Success
-        Controller-->>UI: Bekraeft ændring
-        UI-->>Actor: Vis kvittering
-    else Fejl ved gemning
-        Store-->>Controller: Error
-        Controller-->>UI: Fejl: "Ændring kunne ikke gemmes"
-        UI-->>Actor: Informer fejl
+    Ansat->>BookingUI: Indtast ændringer til booking
+    BookingUI->>BookingController: Send ændringer
+    BookingController->>BookingService: Opdater booking
+    BookingService->>Database: Tjek kapacitet
+    alt Kapacitet OK
+        Database-->>BookingService: OK
+        BookingService->>Database: Gem ændringer
+        Database-->>BookingService: Bekræftet
+        BookingService-->>BookingController: Bekræftelse
+        BookingController-->>BookingUI: Vis bekræftelse
+    else Kapacitet overskredet / systemfejl
+        Database-->>BookingService: Fejl
+        BookingService-->>BookingController: Fejlmeddelelse
+        BookingController-->>BookingUI: Vis fejlmeddelelse
     end
-else Kapacitet overskredet
-    Booking-->>Controller: Invalid
-    Controller-->>UI: Fejl: "For mange billetter"
-    UI-->>Actor: Informer fejl
-end
