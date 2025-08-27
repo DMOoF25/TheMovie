@@ -20,8 +20,8 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ListView ItemsSource="{Binding Cinemas}"
-                          SelectedItem="{Binding SelectedCinema, Mode=TwoWay}">
+                <ListView ItemsSource="{Binding Items}"
+                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Navn" Width="200" DisplayMemberBinding="{Binding Name}"/>
@@ -36,7 +36,7 @@
                            Margin="4"
                            Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
-                    <Button Content="Opdater" Width="80" Command="{Binding RefreshCommand}" />
+                    <Button Content="Opdater" Width="80" Command="{Binding RefreshCommandState}" />
                     <TextBlock Text="Henter..." Margin="8 0 0 0" Foreground="#555"
                                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
