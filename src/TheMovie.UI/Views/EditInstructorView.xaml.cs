@@ -7,7 +7,7 @@ namespace TheMovie.UI.Views;
 
 public partial class EditInstructorView : Page
 {
-    private InstructorsListViewModel? _listVm;
+    private InstructorListViewModel? _listVm;
     private InstructorViewModel? _vm;
 
     public EditInstructorView()
@@ -18,7 +18,7 @@ public partial class EditInstructorView : Page
         DataContext = vm;
         _vm = vm;
 
-        _listVm = App.HostInstance.Services.GetRequiredService<InstructorsListViewModel>();
+        _listVm = App.HostInstance.Services.GetRequiredService<InstructorListViewModel>();
         InstructorsListControl.DataContext = _listVm;
 
         if (_listVm is not null)
@@ -39,8 +39,8 @@ public partial class EditInstructorView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(InstructorsListViewModel.SelectedInstructor)
-            && _listVm?.SelectedInstructor is { } item
+        if (e.PropertyName == nameof(InstructorListViewModel.SelectedItem)
+            && _listVm?.SelectedItem is { } item
             && _vm is not null)
         {
             await _vm.LoadAsync(item.Id);

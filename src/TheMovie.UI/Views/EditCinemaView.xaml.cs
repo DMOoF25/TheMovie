@@ -7,7 +7,7 @@ namespace TheMovie.UI.Views;
 
 public partial class EditCinemaView : Page
 {
-    private CinemasListViewModel? _listVm;
+    private CinemaListViewModel? _listVm;
     private CinemaViewModel? _vm;
 
     public EditCinemaView()
@@ -18,7 +18,7 @@ public partial class EditCinemaView : Page
         DataContext = vm;
         _vm = vm;
 
-        _listVm = App.HostInstance.Services.GetRequiredService<CinemasListViewModel>();
+        _listVm = App.HostInstance.Services.GetRequiredService<CinemaListViewModel>();
         CinemasListControl.DataContext = _listVm;
 
         if (_listVm is not null)
@@ -39,8 +39,8 @@ public partial class EditCinemaView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(CinemasListViewModel.SelectedCinema)
-            && _listVm?.SelectedCinema is { } item
+        if (e.PropertyName == nameof(CinemaListViewModel.SelectedItem)
+            && _listVm?.SelectedItem is { } item
             && _vm is not null)
         {
             await _vm.LoadAsync(item.Id);

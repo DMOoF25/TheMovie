@@ -11,7 +11,7 @@ namespace TheMovie.UI.Views;
 /// </summary>
 public partial class EditHallView : Page
 {
-    private readonly HallsListViewModel _listVm;
+    private readonly HallListViewModel _listVm;
     private readonly HallViewModel _vm;
 
     public EditHallView()
@@ -22,7 +22,7 @@ public partial class EditHallView : Page
         _vm = vm;                 // FIX: assign to field instead of shadowing
         DataContext = vm;
 
-        _listVm = App.HostInstance.Services.GetRequiredService<HallsListViewModel>();
+        _listVm = App.HostInstance.Services.GetRequiredService<HallListViewModel>();
         HallsListControl.DataContext = _listVm;
 
         // Populate form when a hall is selected in the list
@@ -32,7 +32,7 @@ public partial class EditHallView : Page
         // Auto-refresh list after save
         _vm.HallSaved += (_, __) =>
         {
-            if (_listVm?.RefreshCommand is { } cmd && cmd.CanExecute(null))
+            if (_listVm?.RefreshCommandState is { } cmd && cmd.CanExecute(null))
                 cmd.Execute(null);
         };
 
@@ -46,8 +46,8 @@ public partial class EditHallView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(HallsListViewModel.SelectedHall)
-            && _listVm?.SelectedHall is { } item
+        if (e.PropertyName == nameof(HallListViewModel.SelectedItem)
+            && _listVm?.SelectedItem is { } item
             && _vm is not null)
         {
             await _vm.LoadAsync(item.Id);

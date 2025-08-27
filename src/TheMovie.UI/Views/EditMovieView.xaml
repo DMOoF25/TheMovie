@@ -103,6 +103,6 @@
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
 
-        <views:MoviesListView x:Name="MoviesListControl"/>
+        <views:MovieListView x:Name="MovieListControl"/>
     </StackPanel>
 </Page>

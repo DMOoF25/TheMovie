@@ -22,7 +22,7 @@ public partial class EditMovieView : Page
         DataContext = vm;
 
         _listVm = App.HostInstance.Services.GetRequiredService<MovieListViewModel>();
-        MoviesListControl.DataContext = _listVm;
+        MovieListControl.DataContext = _listVm;
 
         // Populate form when a movie is selected in the list
         if (_listVm is not null)
@@ -31,7 +31,7 @@ public partial class EditMovieView : Page
         // Auto-refresh list after save
         _vm.MovieSaved += (_, __) =>
         {
-            if (_listVm?.RefreshCommand is { } cmd && cmd.CanExecute(null))
+            if (_listVm?.RefreshCommandState is { } cmd && cmd.CanExecute(null))
                 cmd.Execute(null);
         };
 
@@ -45,8 +45,8 @@ public partial class EditMovieView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MovieListViewModel.SelectedMovie)
-            && _listVm?.SelectedMovie is { } item
+        if (e.PropertyName == nameof(MovieListViewModel.SelectedItem)
+            && _listVm?.SelectedItem is { } item
             && _vm is not null)
         {
             await _vm.LoadAsync(item.Id);

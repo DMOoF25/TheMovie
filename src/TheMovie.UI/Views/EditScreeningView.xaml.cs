@@ -8,7 +8,7 @@ namespace TheMovie.UI.Views;
 
 public partial class EditScreeningView : Page
 {
-    private ScreeningsListViewModel? _screeningsListVm;
+    private ScreeningListViewModel? _screeningsListVm;
     private ScreeningViewModel? _vm;
 
     public EditScreeningView()
@@ -18,7 +18,7 @@ public partial class EditScreeningView : Page
         _vm = App.HostInstance.Services.GetRequiredService<ScreeningViewModel>();
         DataContext = _vm;
 
-        _screeningsListVm = App.HostInstance.Services.GetRequiredService<ScreeningsListViewModel>();
+        _screeningsListVm = App.HostInstance.Services.GetRequiredService<ScreeningListViewModel>();
         ScreeningsListControl.DataContext = _screeningsListVm;
 
         // Populate form when a screening is selected in the list
@@ -44,8 +44,8 @@ public partial class EditScreeningView : Page
 
     private async void ListVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ScreeningsListViewModel.SelectedScreening)
-            && _screeningsListVm?.SelectedScreening is { } item
+        if (e.PropertyName == nameof(ScreeningListViewModel.SelectedItem)
+            && _screeningsListVm?.SelectedItem is { } item
             && _vm is not null)
         {
             await _vm.LoadAsync(item.Id);
