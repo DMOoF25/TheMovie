@@ -22,7 +22,7 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     public Guid ScreeningId { get; private set; }
     private Screening? _screening;
 
-    // Form fields
+    // Info fields
     public string CinemaName { get; private set; } = string.Empty;
     public string HallName { get; private set; } = string.Empty;
     public string MovieTitle { get; private set; } = string.Empty;
@@ -30,7 +30,7 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     public uint HallCapacity { get; private set; } = 0;
     public uint AvailableSeats { get; private set; } = 0;
 
-    // Booking inputs
+    // Form fields
     private string _numberOfSeatsText = "1";
     public string NumberOfSeatsText
     {
@@ -65,14 +65,14 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         _hallRepository = App.HostInstance.Services.GetRequiredService<IHallRepository>();
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
 
-        IncreaseSeatsCommand = new RelayCommand(() => AdjustSeats(1));
-        DecreaseSeatsCommand = new RelayCommand(() => AdjustSeats(-1));
+        IncreaseSeatsCommand = new RelayCommand(() => AdjustSeats(1), CanIncreaseSeats);
+        DecreaseSeatsCommand = new RelayCommand(() => AdjustSeats(-1), CanDecreaseSeats);
 
         HallCapacity = (selected != null) ? selected.GetCapacity() : 0;
 
         if (selected != null)
         {
-            _ = LoadForScreeningAsync(selected.Id);
+            _ = LoadScreeningAsync(selected.Id);
         }
     }
 
@@ -80,17 +80,41 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     {
         if (!uint.TryParse(NumberOfSeatsText, out var seats)) seats = 1;
         var next = (int)seats + delta;
-        if (next < 1) next = 1;
-        if (next > 999) next = 999;
         NumberOfSeatsText = next.ToString();
     }
 
     #region Load methods
 
     // Treat id as ScreeningId for this ViewModel
-    public override async Task LoadAsync(Guid id) => await LoadForScreeningAsync(id);
+    public override async Task LoadAsync(Guid id)
+    {
+        try
+        {
+            Error = null;
+            var booking = await _repository.GetByIdAsync(id).ConfigureAwait(true);
+            if (booking is null)
+            {
+                Error = "Booking not found.";
+                return;
+            }
+            // Populate form fields from booking
+            ScreeningId = booking.ScreeningId;
+            NumberOfSeatsText = booking.NumberOfSeats.ToString();
+            Email = booking.Email;
+            PhoneNumber = booking.PhoneNumber;
+            await LoadScreeningAsync(ScreeningId).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+        finally
+        {
+            RefreshCommandStates();
+        }
+    }
 
-    public async Task LoadForScreeningAsync(Guid screeningId)
+    public async Task LoadScreeningAsync(Guid screeningId)
     {
         Error = null;
         ScreeningId = screeningId;
@@ -137,7 +161,6 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     }
 
     #endregion
-
     #region CanXXX methods
     protected override bool CanSubmitCore()
     {
@@ -147,8 +170,14 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(PhoneNumber)) return false;
         return true;
     }
+    private bool CanIncreaseSeats() =>
+        (!uint.TryParse(NumberOfSeatsText, out var seats)) &&
+        (seats < 999) && (seats < AvailableSeats) &&
+        (AvailableSeats > 0);
+    private bool CanDecreaseSeats() =>
+        (uint.TryParse(NumberOfSeatsText, out var seats)) &&
+        (seats > 1);
     #endregion
-
     #region Commands
     // Base AddCommand will call this
     protected override async Task OnAddAsync()
@@ -207,6 +236,7 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         CloseRequested?.Invoke(this, EventArgs.Empty);
         await Task.CompletedTask;
     }
+
     #endregion
 
 }
