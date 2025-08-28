@@ -4,7 +4,7 @@ using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public class BookingListViewModel : ListViewModelBase<IBookingRepository, BookingListItemViewModel>
+public sealed class BookingListViewModel : ListViewModelBase<IBookingRepository, BookingListItemViewModel>
 {
     public BookingListViewModel(IBookingRepository repository) : base(repository)
     {
