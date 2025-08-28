@@ -123,5 +123,5 @@ src/
 [Screenshot-editMovieView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editMovieView.png
 [Screenshot-editScreeningView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-editScreeningView.png
 [Screenshot-editScreeningView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editScreeningView.png
-[Screenshot-EditBookingView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-bookingView.png
+[Screenshot-EditBookingView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-EditBookingView.png
 [Screenshot-EditBookingView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-EditBookingView.png
