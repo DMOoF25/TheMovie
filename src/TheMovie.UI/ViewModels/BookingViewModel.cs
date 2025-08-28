@@ -220,9 +220,41 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     protected override async Task OnSaveAsync()
     {
         if (_currentId is null) return;
+        if (!CanSubmitCore())
+        {
+            Error = "Please fill in seats and a contact (email or phone).";
+            return;
+        }
+        if (!uint.TryParse(NumberOfSeatsText, out var seats) || seats == 0)
+        {
+            Error = "Enter a valid number of seats.";
+            return;
+        }
+        try
+        {
+            Error = null;
+            IsSaving = true;
+            var booking = new Booking
+            {
+                Id = _currentId.Value,
+                ScreeningId = ScreeningId,
+                NumberOfSeats = seats,
+                Email = Email?.Trim(),
+                PhoneNumber = PhoneNumber?.Trim()
 
-
-        await Task.CompletedTask;
+            };
+            await _repository.UpdateAsync(booking).ConfigureAwait(true);
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsSaving = false;
+            RefreshCommandStates();
+        }
     }
 
     protected override async Task OnDeleteAsync()
