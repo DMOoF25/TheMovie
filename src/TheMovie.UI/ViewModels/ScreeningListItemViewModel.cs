@@ -19,6 +19,8 @@ public class ScreeningListItemViewModel
     public string DateDisplay { get; }
     public TimeOnly StartTimeDisplay { get; }
     public TimeOnly EndTimeDisplay { get; }
+    public uint Capacity => GetCapacity();
+    public uint AvailableSeats => GetAvailableSeats();
 
     public ScreeningListItemViewModel(Screening screening)
     {
@@ -131,5 +133,24 @@ public class ScreeningListItemViewModel
         {
             throw new Exception("Hall capacity not found");
         }
+    }
+
+    public uint GetAvailableSeats()
+    {
+        if (Id == Guid.Empty) return 0;
+        var screeningRepo = App.HostInstance.Services.GetRequiredService<Application.Abstractions.IScreeningRepository>();
+        var screening = screeningRepo.GetByIdAsync(Id).GetAwaiter().GetResult();
+        if (screening is null || screening.HallId == Guid.Empty) return 0;
+        var hallRepo = App.HostInstance.Services.GetRequiredService<Application.Abstractions.IHallRepository>();
+        var hall = hallRepo.GetByIdAsync(screening.HallId).GetAwaiter().GetResult();
+        if (hall is null) return 0;
+        var bookingRepo = App.HostInstance.Services.GetRequiredService<Application.Abstractions.IBookingRepository>();
+        var bookings = (ICollection<Booking>?)bookingRepo.GetByIdAsync(Id).GetAwaiter().GetResult();
+        uint sum = 0;
+        for (int i = 0; i < bookings?.Count; i++)
+        {
+            sum += bookings.ElementAt(i).NumberOfSeats;
+        }
+        return hall.Capacity - sum;
     }
 }
