@@ -1,5 +1,10 @@
 ﻿classDiagram
     direction TB
+    Title MVVM Diagram - EditMovieView and MovieListView
+
+    %% See DCD.mmd for Movie, GenreOptionViewModel, and InstructorListItemViewModel class details
+    %% This diagram focuses on the MVVM structure for EditMovieView and MovieListView
+
     namespace TheMovie.UI.Views {
         class EditMovieView {
             +EditMovieView()
@@ -10,7 +15,6 @@
         }
     }
 
-    
     namespace TheMovie.UI.ViewModels {
         class MovieViewModel {
                 +string Title
@@ -19,15 +23,6 @@
                 +Guid? SelectedInstructorId
                 +ObservableCollection~GenreOptionViewModel~ GenreOptions
                 +ObservableCollection~InstructorListItemViewModel~ Instructors
-                +ICommand AddCommand
-                +ICommand SaveCommand
-                +ICommand ResetCommand
-                +ICommand CancelCommand
-                +ICommand DeleteCommand
-                +bool IsSaving
-                +string? Error
-                +bool IsEditMode
-                +bool IsAddMode
                 +event EventHandler~Movie~ MovieSaved
                 +Task LoadAsync(Guid id)
                 +Task InitializeAsync()
@@ -36,10 +31,6 @@
 
         class MovieListViewModel {
             +MovieListItemViewModel? SelectedMovie
-            +ObservableCollection~MovieListItemViewModel~ Movies
-            +bool IsLoading
-            +string? Error
-            +ICommand RefreshCommand
             +Task RefreshAsync()
             +event PropertyChangedEventHandler? PropertyChanged
 
@@ -53,6 +44,41 @@
             +string GenresDisplay
             +string InstructorNameDisplay
             +MovieListItemViewModel(Movie movie)
+        }
+
+        class ViewModelBase~TRepos, TEntity~ {
+            #ViewModelBase(TRepos repository)
+            +ICommand AddCommand
+            +ICommand SaveCommand
+            +ICommand DeleteCommand
+            +ICommand ResetCommand
+            +ICommand CancelCommand
+            +string? Error
+            +bool HasError
+            +bool IsSaving
+            +bool IsEditMode
+            +bool IsAddMode
+            +Task LoadAsync(Guid id)
+            #bool CanSubmitCore()
+            #Task OnAddAsync()
+            #Task OnSaveAsync()
+            #Task OnDeleteAsync()
+            #Task OnResetAsync()
+            #Task OnCancelAsync()
+            #void RefreshCommandStates()
+        }
+
+        class ListViewModelBase~TItem~ {
+            +ObservableCollection~TItem~ Items
+            +TItem? SelectedItem
+            +bool IsLoading
+            +string? Error
+            +ICommand RefreshCommand
+            +Task RefreshAsync()
+        }
+
+        class ModelBase {
+            #void OnPropertyChanged(string? propertyName)
         }
     }
 
@@ -73,9 +99,13 @@
     EditMovieView ..> NullToVisibilityConverter : Uses
     EditMovieView --o MovieViewModel : DataContext binds
 
+    ListViewModelBase~TItem~ --|> ModelBase : Inherits
+    MovieListViewModel --|> ListViewModelBase~MovieListItemViewModel~ : Inherits
     MovieListView --o MovieListViewModel : DataContext binds
     MovieListViewModel ..> MovieListItemViewModel : Uses
 
+    ViewModelBase~TRepos, TEntity~ --|> ModelBase : Inherits
+    MovieViewModel --|> ViewModelBase~IMovieRepository, Movie~ : Inherits
     MovieViewModel ..> Movie : Uses
     MovieViewModel ..> GenreOptionViewModel : Uses
     MovieViewModel ..> InstructorListItemViewModel : Uses
@@ -86,4 +116,3 @@
     note for Movie "See DCD.mmd for Movie class details"
     note for GenreOptionViewModel "See DCD.mmd for GenreOptionViewModel class details"
     note for InstructorListItemViewModel "See DCD.mmd for InstructorListItemViewModel class details"
-
