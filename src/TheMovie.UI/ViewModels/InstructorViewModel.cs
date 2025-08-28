@@ -1,75 +1,31 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
-using TheMovie.UI.Commands;
+using TheMovie.UI.ViewModels.Abstractions;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class InstructorViewModel : INotifyPropertyChanged
+public sealed class InstructorViewModel : ViewModelBase<IInstructorRepository, Instructor>
 {
-    private readonly IInstructorRepository _repository;
-
     private Guid? _currentId;
-    private string _name = string.Empty;
-    private bool _isSaving;
-    private string? _error;
-    private bool _isEditMode;
 
+    private string _name = string.Empty;
     public string Name
     {
         get => _name;
-        set { if (_name == value) return; _name = value; OnPropertyChanged(); RefreshCommands(); }
+        set { if (_name == value) return; _name = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
-
-    public string? Error
-    {
-        get => _error;
-        private set { if (_error == value) return; _error = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-    }
-
-    public bool HasError => !string.IsNullOrEmpty(Error);
-
-    public bool IsSaving
-    {
-        get => _isSaving;
-        private set { if (_isSaving == value) return; _isSaving = value; OnPropertyChanged(); RefreshCommands(); }
-    }
-
-    public bool IsEditMode
-    {
-        get => _isEditMode;
-        private set { if (_isEditMode == value) return; _isEditMode = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsAddMode)); RefreshCommands(); }
-    }
-    public bool IsAddMode => !IsEditMode;
-
-    public ICommand AddCommand { get; }
-    public ICommand SaveCommand { get; }
-    public ICommand DeleteCommand { get; }
-    public ICommand ResetCommand { get; }
-    public ICommand CancelCommand { get; }
 
     //public event EventHandler<Instructor>? InstructorSaved;
     // Change the event declaration to allow null for the Instructor parameter
     public event EventHandler<Instructor?>? InstructorSaved;
 
-    public InstructorViewModel(IInstructorRepository? repository = null)
+    public InstructorViewModel(IInstructorRepository? repository = null) : base(App.HostInstance.Services.GetRequiredService<IInstructorRepository>())
     {
-        _repository = repository ?? App.HostInstance.Services.GetRequiredService<IInstructorRepository>();
-
-        AddCommand = new RelayCommand(Add, CanSubmitAdd);
-        SaveCommand = new RelayCommand(Save, CanSubmitSave);
-        DeleteCommand = new RelayCommand(Delete, CanSubmitDelete);
-        ResetCommand = new RelayCommand(Reset, CanReset);
-        CancelCommand = new RelayCommand(Cancel);
-
-        IsEditMode = false;
     }
 
-    public async Task LoadAsync(Guid id)
+    public override async Task LoadAsync(Guid id)
     {
         try
         {
@@ -91,16 +47,11 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool CanSubmitCore() =>
+    protected override bool CanSubmitCore() =>
         !IsSaving
         && !string.IsNullOrWhiteSpace(Name);
 
-    private bool CanSubmitAdd() => IsAddMode && CanSubmitCore();
-    private bool CanSubmitSave() => IsEditMode && CanSubmitCore();
-    private bool CanSubmitDelete() => true;
-    private bool CanReset() => !string.IsNullOrWhiteSpace(Name) || IsEditMode;
-
-    private void Add()
+    protected override async Task OnAddAsync()
     {
         Error = null;
         if (!CanSubmitCore()) return;
@@ -109,11 +60,11 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         try
         {
             var instructor = new Instructor(Name.Trim());
-            _repository.AddAsync(instructor).GetAwaiter().GetResult();
+            await _repository.AddAsync(instructor);
 
             InstructorSaved?.Invoke(this, instructor);
             MessageBox.Show("Instructor added.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -126,7 +77,7 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         }
     }
 
-    private void Save()
+    protected override async Task OnSaveAsync()
     {
         if (_currentId is null)
         {
@@ -160,11 +111,13 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         }
         finally
         {
+            await OnResetAsync(); // back to add mode with empty form
             IsSaving = false;
         }
+        await Task.CompletedTask;
     }
 
-    private void Delete()
+    protected override async Task OnDeleteAsync()
     {
         if (_currentId is null) return;
         if (MessageBox.Show("Vil du slette filminstruktøren?", "Bekræft sletning",
@@ -177,7 +130,7 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
             _repository.DeleteAsync(_currentId.Value).GetAwaiter().GetResult();
             InstructorSaved?.Invoke(this, null);
             MessageBox.Show("Filminstruktøren slettet.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            Reset();
+            await OnResetAsync();
         }
         catch (Exception ex)
         {
@@ -188,31 +141,15 @@ public sealed class InstructorViewModel : INotifyPropertyChanged
         {
             IsSaving = false;
         }
+        await Task.CompletedTask;
     }
 
-    private void Reset()
+    protected override async Task OnResetAsync()
     {
         _currentId = null;
         Name = string.Empty;
         Error = null;
         IsEditMode = false; // back to add mode
+        await Task.CompletedTask;
     }
-
-    private void Cancel()
-    {
-        Reset();
-        var mainFrame = (System.Windows.Application.Current.MainWindow as MainWindow)?.MainFrame;
-        //mainFrame?.Navigate(new MainPageView());
-    }
-
-    private void RefreshCommands()
-    {
-        (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        (ResetCommand as RelayCommand)?.RaiseCanExecuteChanged();
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

@@ -52,5 +52,7 @@
         </StackPanel>
 
         <views:CinemaListView x:Name="CinemasListControl"/>
+
+        <Button Content="Forside" Command="{Binding NavigateHomeCommand}" Width="80" HorizontalAlignment="Left" Margin="0 10 0 0"/>
     </StackPanel>
 </Page>

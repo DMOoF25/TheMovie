@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.UI.Commands;
+using TheMovie.UI.Views;
 
 namespace TheMovie.UI.ViewModels.Abstractions;
 
@@ -14,6 +15,7 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
     public ICommand DeleteCommand { get; }
     public ICommand ResetCommand { get; }
     public ICommand CancelCommand { get; }
+    public ICommand NavigateHomeCommand { get; }
 
     protected string? _error;
     public string? Error
@@ -53,6 +55,7 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
         DeleteCommand = new RelayCommand(async () => await OnDeleteAsync(), CanDelete);
         ResetCommand = new RelayCommand(async () => await OnResetAsync(), CanReset);
         CancelCommand = new RelayCommand(async () => await OnCancelAsync(), CanCancel);
+        NavigateHomeCommand = new RelayCommand(async () => await OnNavigateHomeAsync());
 
         IsEditMode = false;
     }
@@ -82,6 +85,16 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
     protected abstract Task OnDeleteAsync();
 
     protected abstract Task OnResetAsync();
+
+    protected async Task OnNavigateHomeAsync()
+    {
+        // Get the main window
+        var mainWindow = System.Windows.Application.Current.MainWindow as MainWindow;
+        // Navigate the MainFrame to MainPageView
+        mainWindow?.MainFrame.Navigate(new MainPageView());
+
+        await Task.CompletedTask;
+    }
 
     #endregion
 

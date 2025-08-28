@@ -47,5 +47,6 @@
             <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
         </StackPanel>
         <views:InstructorListView x:Name="InstructorsListControl"/>
+        <Button Content="Forside" Command="{Binding NavigateHomeCommand}" Width="80" HorizontalAlignment="Left" Margin="0 10 0 0"/>
     </StackPanel>
 </Page>
