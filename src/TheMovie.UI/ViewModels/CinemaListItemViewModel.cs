@@ -4,7 +4,7 @@ using TheMovie.Domain.Entities;
 
 namespace TheMovie.UI.ViewModels;
 
-public sealed class CinemaListItemViewModel : INotifyPropertyChanged
+public sealed class CinemaListItemViewModel
 {
     public Guid Id { get; }
     public string Name { get; }
@@ -17,7 +17,4 @@ public sealed class CinemaListItemViewModel : INotifyPropertyChanged
         Location = cinema.Location;
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? name = null) =>
-    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
