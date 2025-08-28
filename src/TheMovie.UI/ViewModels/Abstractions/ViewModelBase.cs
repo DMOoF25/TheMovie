@@ -69,7 +69,6 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
     protected bool CanDelete() => IsEditMode && !IsSaving;
     protected bool CanCancel() => IsEditMode && !IsSaving;
     #endregion
-
     #region Command Handlers
     protected abstract Task OnAddAsync();
 
@@ -86,7 +85,7 @@ public abstract class ViewModelBase<TRepos, TEntity> : ModelBase
 
     #endregion
 
-    protected void RefreshCommandStates()
+    protected virtual void RefreshCommandStates()
     {
         (AddCommand as RelayCommand)?.RaiseCanExecuteChanged();
         (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
