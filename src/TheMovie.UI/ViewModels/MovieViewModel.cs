@@ -10,9 +10,10 @@ namespace TheMovie.UI.ViewModels;
 
 public sealed class MovieViewModel : ViewModelBase<IMovieRepository, Movie>
 {
-    private readonly IInstructorRepository _instructorRepository;
-
+    // To track current entity in edit mode
     private Guid? _currentId;
+
+    private readonly IInstructorRepository _instructorRepository;
 
     private string _title = string.Empty;
     public string Title
