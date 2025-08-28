@@ -42,6 +42,13 @@ Det demonstrerer arkitekturprincipper som MVVM, Dependency Injection og Reposito
 - Windows 10 eller nyere
 - .NET 9 SDK eller nyere
 
+## Installation
+1. Klon dette repository: `git clone
+1. Naviger til projektmappen: `cd TheMovie`
+1. Kør powershell script for at hente eksempel data: `.\CopySampleData.ps1`
+1. Byg og kør applikationen: `dotnet run --project src/TheMovie.UI/TheMovie.UI.csproj`
+1. Brug applikationen til at administrere film, biografer og visninger.
+
 ## Centrale begreber
 
 - Dependency Injection: Konfigureret i App.OnStartup via Host.CreateDefaultBuilder.
