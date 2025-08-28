@@ -61,9 +61,8 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         : base(selected ?? App.HostInstance.Services.GetRequiredService<IHallRepository>())
     {
         _cinemaRepository = App.HostInstance.Services.GetRequiredService<ICinemaRepository>();
-        _ = LoadCinemaOption();
+        _ = LoadCinemaOptionAsync();
     }
-
 
     #region Load method
     // Populate form from repository by id (enter edit mode)
@@ -90,9 +89,13 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         {
             Error = ex.Message;
         }
+        finally
+        {
+            RefreshCommandStates();
+        }
     }
 
-    private async Task LoadCinemaOption()
+    private async Task LoadCinemaOptionAsync()
     {
         Error = null;
         try
@@ -108,7 +111,6 @@ public sealed class HallViewModel : ViewModelBase<IHallRepository, Hall>
         }
     }
     #endregion
-
     #region CanXXX methods
     protected override bool CanSubmitCore() =>
         !IsSaving &&

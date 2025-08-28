@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using TheMovie.Domain.Entities;
+﻿using TheMovie.Domain.Entities;
 
 namespace TheMovie.UI.ViewModels;
 
