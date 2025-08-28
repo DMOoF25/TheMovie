@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using TheMovie.Application.Abstractions;
 using TheMovie.Domain.Entities;
@@ -10,7 +11,7 @@ namespace TheMovie.UI.ViewModels;
 public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking>
 {
     // To track current entity in edit mode
-    private readonly Guid? _currentId = null;
+    private Guid? _currentId = null;
 
     //private readonly IBookingRepository _repository;
     private readonly IScreeningRepository _screeningRepository;
@@ -52,6 +53,7 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         set { if (_phoneNumber == value) return; _phoneNumber = value; OnPropertyChanged(); RefreshCommandStates(); }
     }
 
+    // Commands for adjusting seats
     public ICommand IncreaseSeatsCommand { get; }
     public ICommand DecreaseSeatsCommand { get; }
 
@@ -80,7 +82,10 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     {
         if (!uint.TryParse(NumberOfSeatsText, out var seats)) seats = 1;
         var next = (int)seats + delta;
+        if (next < 1) next = 1;
         NumberOfSeatsText = next.ToString();
+        OnPropertyChanged(nameof(NumberOfSeatsText)); // Ensure property change notification
+
     }
 
     #region Load methods
@@ -98,19 +103,16 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
                 return;
             }
             // Populate form fields from booking
+            _currentId = booking.Id;
             ScreeningId = booking.ScreeningId;
             NumberOfSeatsText = booking.NumberOfSeats.ToString();
             Email = booking.Email;
             PhoneNumber = booking.PhoneNumber;
-            await LoadScreeningAsync(ScreeningId).ConfigureAwait(true);
+            IsEditMode = true;
         }
         catch (Exception ex)
         {
             Error = ex.Message;
-        }
-        finally
-        {
-            RefreshCommandStates();
         }
     }
 
@@ -171,9 +173,12 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
         return true;
     }
     private bool CanIncreaseSeats() =>
-        (!uint.TryParse(NumberOfSeatsText, out var seats)) &&
-        (seats < 999) && (seats < AvailableSeats) &&
-        (AvailableSeats > 0);
+        (AvailableSeats > 0) &&
+        (AvailableSeats > (uint.TryParse(NumberOfSeatsText, out var seats) ? seats : 0));
+
+    //(!uint.TryParse(NumberOfSeatsText, out var seats)) &&
+    //(seats < 999) && (seats < AvailableSeats) &&
+    //(AvailableSeats > 0);
     private bool CanDecreaseSeats() =>
         (uint.TryParse(NumberOfSeatsText, out var seats)) &&
         (seats > 1);
@@ -223,7 +228,34 @@ public sealed class BookingViewModel : ViewModelBase<IBookingRepository, Booking
     protected override async Task OnDeleteAsync()
     {
         if (_currentId is null) return;
-        await Task.CompletedTask;
+        if (MessageBox.Show("Er du sikker på, at du vil slette denne reservation", "Bekræft sletning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        {
+            try
+            {
+                Error = null;
+                IsSaving = true;
+                await _repository.DeleteAsync(_currentId.Value).ConfigureAwait(true);
+                await OnResetAsync();
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+                MessageBox.Show($"Kunne ikke slette reservation.\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsSaving = false;
+                RefreshCommandStates();
+            }
+        }
+    }
+
+    protected override void RefreshCommandStates()
+    {
+        base.RefreshCommandStates();
+        (IncreaseSeatsCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (DecreaseSeatsCommand as RelayCommand)?.RaiseCanExecuteChanged();
     }
 
     protected override async Task OnResetAsync()

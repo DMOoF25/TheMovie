@@ -4,6 +4,9 @@
         xmlns:viewmodels="clr-namespace:TheMovie.UI.ViewModels" 
         xmlns:views="clr-namespace:TheMovie.UI.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:BookingViewModel}"
         Title="Reserver pladser" Height="360" Width="520" WindowStartupLocation="CenterOwner">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="12">
@@ -52,10 +55,15 @@
             </StackPanel>
             <TextBlock Text="{Binding Error}" Foreground="Tomato" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Reserver" Padding="12,6" Margin="0,0,8,0"
-                    Command="{Binding BookCommand}"/>
-                <Button Content="Fortryd" Padding="12,6"
-                    Command="{Binding CancelCommand}"/>
+                <Button Content="Tilføj" Width="80" Command="{Binding AddCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Gem" Width="80" Command="{Binding SaveCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Slet" Width="80" Command="{Binding DeleteCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Nulstil" Width="80" Command="{Binding ResetCommand}" Margin="0 0 6 0"
+                    Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Annuller" Width="80" Command="{Binding CancelCommand}"/>
             </StackPanel>
 
             <views:BookingListView x:Name="BookingListControl"/>
