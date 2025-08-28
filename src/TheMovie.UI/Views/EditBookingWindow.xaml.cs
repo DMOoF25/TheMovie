@@ -23,6 +23,7 @@ namespace TheMovie.UI.Views
             DataContext = vm;
 
             _listVm = App.HostInstance.Services.GetRequiredService<BookingListViewModel>();
+            BookingListControl.DataContext = _listVm;
 
             // Populate form when a movie is selected in the list
             if (_listVm is not null)
@@ -36,9 +37,9 @@ namespace TheMovie.UI.Views
 
                 // If invoked from MainPage, ScreeningId is passed via Tag
                 if (Tag is Guid g)
-                    await bvm.LoadForScreeningAsync(g);
+                    await bvm.(g);
                 else if (Tag is string s && Guid.TryParse(s, out var g2))
-                    await bvm.LoadForScreeningAsync(g2);
+                    await bvm.LoadScreeningAsync(g2);
             };
         }
 
