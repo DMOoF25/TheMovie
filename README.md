@@ -10,6 +10,7 @@ Demonstrate HLD and LLD for a simple WPF application using MVVM, Dependency Inje
 [![Screenshot-menu-admin][Screenshot-menu-admin]][Screenshot-menu-admin-url]
 [![Screenshot-editMovieView][Screenshot-editMovieView]][Screenshot-editMovieView-url]
 [![Screenshot-editScreeningView][Screenshot-editScreeningView]][Screenshot-editScreeningView-url]
+[![Screenshot-EditBookingView][Screenshot-EditBookingView]][Screenshot-EditBookingView-url]
 
 ## Indholdsfortegnelse
 - [Om](#om)
@@ -122,3 +123,5 @@ src/
 [Screenshot-editMovieView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editMovieView.png
 [Screenshot-editScreeningView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-editScreeningView.png
 [Screenshot-editScreeningView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-editScreeningView.png
+[Screenshot-EditBookingView]: https://raw.githubusercontent.com/DMOoF25/TheMovie/master/images/screenshots/small/Screenshot-bookingView.png
+[Screenshot-EditBookingView-url]: https://github.com/DMOoF25/TheMovie/blob/master/images/screenshots/Screenshot-EditBookingView.png
